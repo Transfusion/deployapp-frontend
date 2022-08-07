@@ -1,11 +1,35 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthProvider';
+
+import Navbar from './components/Navbar';
 import logo from './logo.svg';
-import './App.css';
+// import './App.css';
+
+import Login from '../src/pages/Login';
+import Home from './pages/Home';
+import { userInfo } from 'os';
+import ManageStorage from './pages/ManageStorage';
+
+
+// const Home = () => (
+//   <div>
+//     <h2>Home</h2>
+//   </div>
+// );
+
+// const Login = () => {
+//   <div>
+//     <h2>Login</h2>
+//   </div>
+// }
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
+    <>
+      <Router>
+        <AuthProvider>
+          {/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
@@ -18,8 +42,18 @@ function App() {
         >
           Learn React
         </a>
-      </header>
-    </div>
+      </header> */}
+
+          <Navbar />
+          <Routes>
+            <Route index element={<Home />} />
+            <Route path="/profile" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/storage" element={<ManageStorage />} />
+          </Routes>
+        </AuthProvider>
+      </Router>
+    </>
   );
 }
 

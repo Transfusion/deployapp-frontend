@@ -8,6 +8,9 @@ module.exports = {
     extend: {},
   },
   plugins: [
+    require('@tailwindcss/forms')({
+      strategy: 'class', // only generate classes
+    }),
     plugin(function ({ addBase, theme }) {
       addBase({
         'h1': { fontSize: theme('fontSize.2xl') },

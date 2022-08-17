@@ -1,6 +1,15 @@
 import axiosClient from "./client"
+import { CreateS3CredentialRequest } from "./interfaces/request/create_s3_credential"
+import { CreateS3CredentialResponse } from "./interfaces/response/create_s3_credential"
 import PagingSortingSpring from "./interfaces/response/paging_sorting_spring"
+import S3RegionsResponse from "./interfaces/response/s3_regions_response"
 import { StorageCredential } from "./interfaces/response/storage_credential"
+
+export function getS3Regions() {
+    return axiosClient.get<S3RegionsResponse>("/api/v1/utility/public/S3Regions", {
+    });
+}
+
 
 /**
  * 
@@ -74,4 +83,8 @@ export function getStorageCredentials(page: Number, size = 15) {
     return axiosClient.get<PagingSortingSpring<StorageCredential>>("/api/v1/credentials", {
         params: { page, size }
     })
+}
+
+export function createS3Credential(data: CreateS3CredentialRequest) {
+    return axiosClient.post<CreateS3CredentialResponse>("/api/v1/credentials/S3", data);
 }

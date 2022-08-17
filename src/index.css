@@ -1,8 +1,10 @@
+@import 'styles/rsuite_components.css';
+@import 'rsuite-table/dist/css/rsuite-table.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import 'rsuite-table/dist/css/rsuite-table.css';
 
 html,
 body,
@@ -12,7 +14,9 @@ body,
 }
 
 body {
-  --colors-background: white; /* TODO: dark theme? */
+  --colors-background: white;
+  --colors-text: black;
+  /* TODO: dark theme? */
   background-color: var(--colors-background);
 
   margin: 0;
@@ -22,6 +26,14 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.rs-picker-toggle-value {
+  color: var(--colors-text) !important;
+}
+
+.custom-selectpicker>.rs-picker-toggle {
+  border-color: inherit !important;
 }
 
 code {

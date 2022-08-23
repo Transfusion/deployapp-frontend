@@ -79,10 +79,26 @@ export function getS3Regions() {
     "empty": false
 }
  */
-export function getStorageCredentials(page: Number, size = 15) {
-    return axiosClient.get<PagingSortingSpring<StorageCredential>>("/api/v1/credentials", {
-        params: { page, size }
-    })
+export function getStorageCredentials(page: Number, size = 15, sort?: { key: string, direction: string }[], name?: string, types?: string[]) {
+    let params = new URLSearchParams();
+    params.append("page", page.toString());
+    params.append("size", size.toString());
+    if (sort !== undefined) {
+        for (let { key, direction } of sort) {
+            params.append("sort", `${key},${direction}`);
+        }
+    }
+
+    if (types !== undefined) {
+        for (let type of types) {
+            params.append("types", type);
+        }
+    }
+
+    if (!!name)
+        params.append("name", name)
+
+    return axiosClient.get<PagingSortingSpring<StorageCredential>>("/api/v1/credentials", { params })
 }
 
 export function createS3Credential(data: CreateS3CredentialRequest) {

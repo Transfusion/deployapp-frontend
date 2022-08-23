@@ -156,7 +156,7 @@ export default function ManageStorage() {
     <Table
       loading={isLoading}
       data={data?.data.content}
-      height={300}
+      height={400}
       showHeader={true}
       onRowClick={rowData => {
         console.log(rowData);

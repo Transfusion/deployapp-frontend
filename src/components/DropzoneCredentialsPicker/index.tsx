@@ -79,17 +79,15 @@ export default function DropzoneCredentialsPicker() {
 
     <BsExclamationCircle size={'1.5em'} style={{ marginRight: "15px" }} />
 
-    <div>
+    <div className="h-fit">
       <p>Add storage credentials to get started.</p>
-      <div>
-        <Link type="button" className={classNames('hover:text-white', 'border-2', 'border-blue-700', 'hover:bg-blue-800', 'focus:ring-4', 'focus:outline-none', 'focus:ring-blue-300', 'font-medium', 'text-sm', 'px-2', 'py-2', 'text-center',
-          'mt-2',
-          // 'mr-2', 'mb-2',
+      <Link className={classNames('hover:text-white', 'block', 'w-fit', 'border-2', 'border-blue-700', 'hover:bg-blue-800', 'focus:ring-4', 'focus:outline-none', 'focus:ring-blue-300', 'font-medium', 'text-sm', 'p-2', 'text-center',
+        'mt-2',
+        // 'mr-2', 'mb-2',
 
-          // 'dark:border-blue-500', 'dark:hover:text-white', 'dark:hover:bg-blue-600', 'dark:focus:ring-blue-800'
+        // 'dark:border-blue-500', 'dark:hover:text-white', 'dark:hover:bg-blue-600', 'dark:focus:ring-blue-800'
 
-        )} to="/storage">Manage Credentials</Link>
-      </div>
+      )} to="/storage">Manage Credentials</Link>
     </div>
 
   </div>

@@ -2,11 +2,12 @@ import * as React from 'react'
 import { PropsWithChildren } from 'react'
 import Profile from '../api/interfaces/response/profile'
 import { getProfile } from '../api/Profile'
+import { Logout } from "../api/Logout"
 import { useAsync } from '../utils/hooks'
 
 const defaultValue = {
   // login: () => { },
-  // logout: () => { },
+  logout: () => { },
   profile: {} as Profile
 }
 
@@ -50,9 +51,19 @@ function AuthProvider(props: PropsWithChildren<{}>) {
     })())
   }, [run])
 
+  const logout = React.useCallback(async () => {
+    await Logout();
+    // queryCache.clear()
+    // setData(null)
+    
+    run((async () => {
+      return (await getProfile()).data;
+    })())
+  }, [run])
+
   const value = React.useMemo(
-    () => ({ profile, /*login, logout, register*/ }),
-    [/*login, logout, register,*/ profile],
+    () => ({ profile, logout, /*login, logout, register*/ }),
+    [/*login, logout, register,*/ profile, logout],
   )
 
   // if (isSuccess) {

@@ -1,14 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import styled from "styled-components";
 
-import { Table, Column, HeaderCell, Cell } from 'rsuite-table';
-
-import { createS3Credential, getStorageCredentials } from "../../api/StorageCredentials";
-import { useAuth } from "../../contexts/AuthProvider";
+import { createS3Credential } from "../../api/StorageCredentials";
 import classNames from "classnames";
 
-import { BsExclamationCircle, BsPlusCircleFill } from "react-icons/bs";
+import { BsPlusCircleFill } from "react-icons/bs";
 import { Input, SelectPicker } from "rsuite";
 import { STORAGE_TYPES } from "../../utils/constants";
 
@@ -20,32 +16,13 @@ import { AxiosResponse, AxiosError } from "axios";
 import { CreateS3CredentialResponse } from "../../api/interfaces/response/create_s3_credential";
 import CreateUnsuccessfulAlert from "./components/CreateUnsuccessfulAlert";
 import CreateSuccessfulAlert from "./components/CreateSuccessfulAlert";
-
-
-const CustomHeaderCell = styled(HeaderCell).attrs({
-  className: 'text-sm'
-})``;
-
-const CustomCell = styled(Cell).attrs({
-  className: 'text-base'
-})``;
-
-const humanReadableDate = (d?: Date): string => {
-  if (!d) return "Never";
-  return new Date(d).toLocaleString();
-}
+import CredentialsTable from "../../components/CredentialsTable";
 
 const STORAGE_TYPE_DATA = /*Object.entries(STORAGE_TYPES)*/[['S3', 'S3'] as [string, string]].map(
   ([label, value]: [string, string]) => ({ label, value })
 );
 
-const size = 15;
 export default function ManageStorage() {
-  const [page, setPage] = useState(0);
-  const { profile } = useAuth();
-
-  // TODO: implement organization
-  const [organization, setOrganization] = useState(null);
 
   // add credentials section
   const [showAddCredentials, setShowAddCredentials] = useState(false);
@@ -53,29 +30,13 @@ export default function ManageStorage() {
 
   const queryClient = useQueryClient();
 
-  const queryKey = ['storage_creds', {
-    page,
-    size,
-    organization,
-    authenticated: profile?.authenticated
-  }];
-
-  // fetching
-  const { isLoading,
-    isError,
-    error,
-    data,
-    isFetching,
-    isPreviousData, } = useQuery(queryKey, () => getStorageCredentials(page, size));
-
-
   // updating
-  const { isLoading: mutationIsLoading, isError: mutationIsError, isSuccess: mutationSuccess, error: mutationError, mutate: addNewS3Credential } = useMutation<AxiosResponse<CreateS3CredentialResponse, any>, AxiosError, CreateS3CredentialRequest>((req: CreateS3CredentialRequest) => {
+  const { isSuccess: mutationSuccess, error: mutationError, mutate: addNewS3Credential } = useMutation<AxiosResponse<CreateS3CredentialResponse, any>, AxiosError, CreateS3CredentialRequest>((req: CreateS3CredentialRequest) => {
     return createS3Credential(req);
   }, {
     // req is the return type of the previous function 
-    onSuccess: async (resp) => {
-      queryClient.invalidateQueries(queryKey);
+    onSuccess: async () => {
+      queryClient.invalidateQueries(['storage_creds']);
     }
   });
 
@@ -151,48 +112,6 @@ export default function ManageStorage() {
       </div>
 
     </form>}
-
-
-    <Table
-      loading={isLoading}
-      data={data?.data.content}
-      height={400}
-      showHeader={true}
-      onRowClick={rowData => {
-        console.log(rowData);
-      }}>
-
-      <Column width={60} align="center" fixed>
-        <CustomHeaderCell className="text-sm">Type</CustomHeaderCell>
-        <CustomCell dataKey="type" />
-      </Column>
-
-      <Column width={150}>
-        <CustomHeaderCell>Name</CustomHeaderCell>
-        <CustomCell dataKey="name" />
-      </Column>
-
-      <Column width={200} resizable>
-        <CustomHeaderCell>Created On</CustomHeaderCell>
-        <CustomCell dataKey="createdOn">{rowData => humanReadableDate(rowData.createdOn)}</CustomCell>
-      </Column>
-
-      <Column width={200} resizable>
-        <CustomHeaderCell>Checked On</CustomHeaderCell>
-        <CustomCell dataKey="checkedOn">{rowData => humanReadableDate(rowData.checkedOn)}</CustomCell>
-      </Column>
-
-      <Column width={200} resizable>
-        <CustomHeaderCell>Last Used</CustomHeaderCell>
-        <CustomCell dataKey="lastUsed">{rowData => humanReadableDate(rowData.lastUsed)}</CustomCell>
-      </Column>
-
-      {/* <Column width={100}>
-        <HeaderCell>Gender</HeaderCell>
-        <Cell dataKey="gender" />
-      </Column> */}
-
-    </Table>
-
+    <CredentialsTable />
   </div>
 }

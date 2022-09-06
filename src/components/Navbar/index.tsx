@@ -39,7 +39,7 @@ const Nav = styled.nav.attrs({
 `;
 
 export default function Navbar() {
-  const { profile } = useAuth();
+  const { profile, logout } = useAuth();
   const [mobileExpanded, setMobileExpanded] = useState(false);
 
   const toggleMobileExpanded = () => {
@@ -59,9 +59,12 @@ export default function Navbar() {
         <NonDropdownSpan>Manage Storage</NonDropdownSpan>
       </NavLink>
 
-      {profile?.authenticated ? <NavLink to="/profile" >
+      {profile?.authenticated && <NavLink to="/profile" >
         <NonDropdownSpan>Profile</NonDropdownSpan>
-      </NavLink> :
+      </NavLink>}
+
+      {profile?.authenticated ?
+        <NonDropdownSpan onClick={logout}>Logout</NonDropdownSpan> :
         <NavLink to="/login" >
           <NonDropdownSpan>Login</NonDropdownSpan>
         </NavLink>}
@@ -102,9 +105,16 @@ export default function Navbar() {
         <NonDropdownSpan>Manage Storage</NonDropdownSpan>
       </NavLink>
 
-      {profile?.authenticated ? <NavLink to="/profile" >
+      {profile?.authenticated && <NavLink to="/profile" >
         <NonDropdownSpan>Profile</NonDropdownSpan>
-      </NavLink> :
+      </NavLink>}
+
+      {profile?.authenticated && <NavLink to="/profile" >
+        <NonDropdownSpan>Profile</NonDropdownSpan>
+      </NavLink>}
+
+      {profile?.authenticated ?
+        <NonDropdownSpan onClick={logout}>Logout</NonDropdownSpan> :
         <NavLink to="/login" >
           <NonDropdownSpan>Login</NonDropdownSpan>
         </NavLink>}

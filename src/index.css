@@ -11,6 +11,8 @@ body,
 #root,
 #root>div {
   min-height: 100vh;
+  /* prevent macos swipe to navigate backwards */
+  overscroll-behavior-x: none;
 }
 
 body {

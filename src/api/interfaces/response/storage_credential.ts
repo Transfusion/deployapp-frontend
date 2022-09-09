@@ -19,6 +19,17 @@ export interface S3Credential extends StorageCredential {
   bucket: string,
 }
 
+export function instanceOfS3Credential(object?: any): object is S3Credential {
+  return object !== null && object !== undefined &&
+    'server' in object &&
+    'accessKey' in object &&
+    'secretKey' in object &&
+    'bucket' in object
+}
+
+/**
+ * Corresponds to FtpCredentialDTO on the server side
+ */
 export interface FtpCredential extends StorageCredential {
   server: string,
   port: Number,
@@ -26,4 +37,14 @@ export interface FtpCredential extends StorageCredential {
   password: string,
   directory: string,
   baseUrl: string,
+}
+
+export function instanceOfFtpCredential(object?: any): object is S3Credential {
+  return object !== null && object !== undefined &&
+    'server' in object &&
+    'port' in object &&
+    'username' in object &&
+    'password' in object &&
+    'directory' in object &&
+    'baseUrl' in object 
 }

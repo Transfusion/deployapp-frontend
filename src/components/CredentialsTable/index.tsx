@@ -1,9 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { ReactElement, useState } from "react";
+import { ReactElement, useState, useMemo } from "react";
 import { BsSearch } from "react-icons/bs";
 import { Input, InputGroup, TagPicker, Pagination } from "rsuite";
 import { Table, Column, HeaderCell, Cell, SortType, RowDataType } from 'rsuite-table';
 import styled from "styled-components";
+
+import MaterialReactTable, { MRT_ColumnDef } from 'material-react-table';
+import type {
+  ColumnFiltersState,
+  PaginationState,
+  SortingState,
+} from '@tanstack/react-table';
+
 import { StorageCredential, instanceOfS3Credential } from "../../api/interfaces/response/storage_credential";
 import { getStorageCredentials } from "../../api/StorageCredentials";
 import { useAuth } from "../../contexts/AuthProvider";
@@ -68,22 +76,44 @@ export default function CredentialsTable({
   noCredsBlurb?: ReactElement,
 
 }) {
-  const [sortColumn, setSortColumn] = useState<string>();
-  const [sortType, setSortType] = useState<SortType>();
+  // const [sortColumn, setSortColumn] = useState<string>();
+  // const [sortType, setSortType] = useState<SortType>();
 
-  const hasSort = sortType !== undefined && sortColumn !== undefined;
+  // const hasSort = sortType !== undefined && sortColumn !== undefined;
 
-  const [page, setPage] = useState(1);
-  const [size, setSize] = useState(15);
+  // const [page, setPage] = useState(1);
+  // const [size, setSize] = useState(15);
 
-  const handleChangeLimit = (dataKey: number) => {
-    setPage(1);
-    setSize(dataKey);
-  };
+  // const handleChangeLimit = (dataKey: number) => {
+  //   setPage(1);
+  //   setSize(dataKey);
+  // };
 
-  const [types, setTypes] = useState(["S3", "FTP"]);
-  const [_name, set_Name] = useState<string>();
-  const [name, setName] = useState<string>();
+  const [sorting, setSorting] = useState<SortingState>([]);
+  console.log("sorting", sorting);
+  // const hasSort = sorting.length > 0;
+  const apiSorting = sorting.map(({ id, desc }) => ({ key: id, direction: (desc ? 'desc' : 'asc') }));
+
+
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([{ id: "type", value: Object.values(STORAGE_TYPES) }]);
+
+  console.log("columnFilters", columnFilters);
+
+  const nameColFilter = columnFilters.find(({ id }) => id === 'name');
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const { pageIndex: page, pageSize: size } = pagination;
+
+  const types = (columnFilters.find(({ id }) => id === "type")?.value ?? []) as string[];
+
+  // const [types, setTypes] = useState(["S3", "FTP"]);
+  // const [_name, set_Name] = useState<string>();
+  // const [name, setName] = useState<string>();
+  const name = nameColFilter?.value as string | undefined;
 
   const { profile } = useAuth();
 
@@ -96,9 +126,9 @@ export default function CredentialsTable({
     organization,
     authenticated: profile?.authenticated,
 
-    sortColumn,
-    sortType,
-
+    // sortColumn,
+    // sortType,
+    apiSorting,
     types,
     name,
   }];
@@ -131,15 +161,56 @@ export default function CredentialsTable({
     error,
     data,
     isFetching,
-    isPreviousData, } = useQuery(queryKey, () => getStorageCredentials(page - 1, size, (hasSort ? [{ key: sortColumn, direction: sortType }] : undefined), name, types));
+    isPreviousData, } = useQuery(queryKey, () => getStorageCredentials(page, size, apiSorting, name, types));
 
 
   const noCreds = !isLoading && data?.data.empty === true && types.length == AVAILABLE_TYPES.length && name == undefined;
 
+  // table hooks begin here
+  const columns = useMemo<MRT_ColumnDef<StorageCredential>[]>(
+    () => [
+      {
+        accessorKey: 'type',
+        header: 'Type',
+        filterSelectOptions: [
+          { text: 'S3', value: 'S3' },
+          { text: 'FTP', value: 'FTP' },
+        ],
+        filterVariant: 'multi-select',
+        enableSorting: false,
+      },
+      {
+        accessorKey: 'name',
+        header: 'Name',
+      },
+      {
+        accessorKey: 'createdOn',
+        header: 'Created On',
+        Cell: ({ cell }) => <span>{humanReadableDate(cell.getValue<Date>())}</span>,
+        enableColumnFilter: false
+      },
+      {
+        accessorKey: 'checkedOn',
+        header: 'Checked On',
+        Cell: ({ cell }) => <span>{humanReadableDate(cell.getValue<Date>())}</span>,
+        enableColumnFilter: false
+      },
+      {
+        accessorKey: 'lastUsed',
+        header: 'Last Used',
+        Cell: ({ cell }) => <span>{humanReadableDate(cell.getValue<Date>())}</span>,
+        enableColumnFilter: false
+      },
+    ],
+    [],
+  );
+  // table hooks end here
+
+  // ... because hooks cannot be called conditionally
   if (noCreds && noCredsBlurb !== undefined) return noCredsBlurb;
 
   return <>
-    <div className="py-5 flex flex-wrap flex-row gap-2 justify-end">
+    {/* <div className="py-5 flex flex-wrap flex-row gap-2 justify-end">
 
       <TagPicker
         className="grow"
@@ -161,83 +232,41 @@ export default function CredentialsTable({
       </div>
 
       <button onClick={() => { setSortColumn(undefined); setSortType(undefined); }} disabled={!hasSort} className="px-4 py-2 font-semibold text-sm bg-blue-700 text-white rounded-md shadow-sm disabled:opacity-75">Reset</button>
-    </div>
+    </div> */}
 
-    <Table
-      loading={isLoading}
-      shouldUpdateScroll={false}
-      data={data?.data.content}
-      sortColumn={sortColumn}
-      sortType={sortType}
-      height={400}
-      showHeader={true}
-      // onRowClick={rowData => {
-      //   console.log(rowData);
-      // }}
-
-      // renderRowExpanded={renderRowExpanded}
-      // rowExpandedHeight={300}
-      // expandedRowKeys={expandedRowKeys}
-      rowKey={'id'}
-      onSortColumn={(sortColumn, sortType) => {
-        console.log(sortColumn, sortType);
-        setSortColumn(sortColumn);
-        setSortType(sortType);
-      }}>
-
-      <Column width={70} align="center">
-        <HeaderCell>Details</HeaderCell>
-        <ExpandCell expandedRowKeys={expandedRowKeys}
-          onChange={handleExpanded} />
-      </Column>
-
-      <Column width={80} align="center">
-        <CustomHeaderCell className="text-sm">Type</CustomHeaderCell>
-        <CustomCell dataKey="type" />
-      </Column>
-
-      <Column sortable width={150}>
-        <CustomHeaderCell>Name</CustomHeaderCell>
-        <CustomCell dataKey="name" />
-      </Column>
-
-      <Column sortable width={200} resizable>
-        <CustomHeaderCell>Created On</CustomHeaderCell>
-        <CustomCell dataKey="createdOn">{rowData => humanReadableDate(rowData.createdOn)}</CustomCell>
-      </Column>
-
-      <Column sortable width={200} resizable>
-        <CustomHeaderCell>Checked On</CustomHeaderCell>
-        <CustomCell dataKey="checkedOn">{rowData => humanReadableDate(rowData.checkedOn)}</CustomCell>
-      </Column>
-
-      <Column sortable width={200} resizable>
-        <CustomHeaderCell>Last Used</CustomHeaderCell>
-        <CustomCell dataKey="lastUsed">{rowData => humanReadableDate(rowData.lastUsed)}</CustomCell>
-      </Column>
-
-    </Table>
+    <MaterialReactTable
+      columns={columns}
+      data={data?.data.content ?? []}
+      initialState={{ showColumnFilters: true, density: 'compact' }}
+      enableGlobalFilter={false}
+      manualFiltering
+      manualPagination
+      manualSorting
+      muiTableContainerProps={{ sx: { maxHeight: '750px' } }}
+      muiToolbarAlertBannerProps={
+        isError
+          ? {
+            color: 'error',
+            children: 'Error loading data',
+          }
+          : undefined
+      }
+      onColumnFiltersChange={setColumnFilters}
+      // onGlobalFilterChange={setGlobalFilter}
+      onPaginationChange={setPagination}
+      onSortingChange={setSorting}
+      rowCount={data?.data.totalElements ?? 0}
 
 
-    <div className="p-4">
-      <Pagination
-        prev
-        next
-        first
-        last
-        ellipsis
-        boundaryLinks
-        maxButtons={5}
-        size="xs"
-        layout={['total', '-', 'limit', '|', 'pager', 'skip']}
-        // total number of rows
-        total={data?.data.totalElements || 0}
-        limitOptions={[5, 10, 15, 20]}
-        limit={size}
-        activePage={page}
-        onChangePage={setPage}
-        onChangeLimit={handleChangeLimit}
-      />
-    </div>
+      state={{
+        columnFilters,
+        // globalFilter,
+        isLoading,
+        pagination,
+        showAlertBanner: isError,
+        showProgressBars: isFetching,
+        sorting,
+      }}
+    />
   </>
 }

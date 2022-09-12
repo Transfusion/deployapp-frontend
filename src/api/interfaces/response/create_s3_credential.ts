@@ -9,6 +9,7 @@ export interface CreateS3CredentialResponse {
   testSignedLinkError: string
 }
 
+// used in CreateUnsuccessfulAlert
 export function instanceOfCreateS3CredentialResponse(object?: any): object is CreateS3CredentialResponse {
   return object !== null && object !== undefined &&
     'success' in object &&

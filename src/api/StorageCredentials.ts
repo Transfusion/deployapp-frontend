@@ -1,9 +1,11 @@
 import axiosClient from "./client"
 import { CreateS3CredentialRequest } from "./interfaces/request/create_s3_credential"
+import { UpdateS3CredentialRequest } from "./interfaces/request/update_s3_credential"
 import { CreateS3CredentialResponse } from "./interfaces/response/create_s3_credential"
 import PagingSortingSpring from "./interfaces/response/paging_sorting_spring"
 import S3RegionsResponse from "./interfaces/response/s3_regions_response"
 import { StorageCredential } from "./interfaces/response/storage_credential"
+import { UpdateS3CredentialResponse } from "./interfaces/response/update_s3_credential"
 
 export function getS3Regions() {
     return axiosClient.get<S3RegionsResponse>("/api/v1/utility/public/S3Regions", {
@@ -103,4 +105,9 @@ export function getStorageCredentials(page: Number, size = 15, sort?: { key: str
 
 export function createS3Credential(data: CreateS3CredentialRequest) {
     return axiosClient.post<CreateS3CredentialResponse>("/api/v1/credentials/S3", data);
+}
+
+
+export function updateS3Credential(id: string, data: UpdateS3CredentialRequest) {
+    return axiosClient.put<UpdateS3CredentialResponse>(`/api/v1/credentials/S3/${id}`, data);
 }

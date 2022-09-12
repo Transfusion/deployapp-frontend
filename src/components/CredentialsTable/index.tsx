@@ -1,17 +1,20 @@
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { AxiosResponse } from "axios";
-import classNames from "classnames";
+import { useQuery } from "@tanstack/react-query";
 import { ReactElement, useState } from "react";
-import { BsExclamationCircle, BsSearch } from "react-icons/bs";
-import { Link } from "react-router-dom";
+import { BsSearch } from "react-icons/bs";
 import { Input, InputGroup, TagPicker, Pagination } from "rsuite";
-import { Table, Column, HeaderCell, Cell, SortType } from 'rsuite-table';
+import { Table, Column, HeaderCell, Cell, SortType, RowDataType } from 'rsuite-table';
 import styled from "styled-components";
-import PagingSortingSpring from "../../api/interfaces/response/paging_sorting_spring";
-import { StorageCredential } from "../../api/interfaces/response/storage_credential";
+import { StorageCredential, instanceOfS3Credential } from "../../api/interfaces/response/storage_credential";
 import { getStorageCredentials } from "../../api/StorageCredentials";
 import { useAuth } from "../../contexts/AuthProvider";
 import { STORAGE_TYPES } from "../../utils/constants";
+
+import CollaspedOutlineIcon from '@rsuite/icons/CollaspedOutline';
+import ExpandOutlineIcon from '@rsuite/icons/ExpandOutline';
+import IconButton from 'rsuite/IconButton';
+
+import { InnerCellProps } from 'rsuite-table/lib/Cell';
+import UpdateDeleteS3Row from "./UpdateDeleteS3Row";
 
 // table utilities start
 
@@ -29,6 +32,30 @@ const humanReadableDate = (d?: Date): string => {
 }
 
 const AVAILABLE_TYPES = Object.entries(STORAGE_TYPES).map(([key, value]) => ({ key, label: value }));
+
+const renderRowExpanded = (data?: RowDataType) => {
+  if (instanceOfS3Credential(data)) return <UpdateDeleteS3Row
+    s3_credential={data} />
+}
+
+const ExpandCell = ({ rowData, dataKey, expandedRowKeys, onChange, ...props }: Omit<InnerCellProps, 'onChange'> & { expandedRowKeys: string[], onChange: (rowData: StorageCredential) => void }) => (
+  <Cell {...props} >
+    <IconButton
+      appearance="subtle"
+      onClick={() => {
+        onChange(rowData);
+      }}
+      icon={
+        expandedRowKeys.some(key => key === rowData.id) ? (
+          <CollaspedOutlineIcon />
+        ) : (
+          <ExpandOutlineIcon />
+        )
+      }
+    />
+  </Cell>
+);
+
 // table utilities end
 
 
@@ -76,6 +103,28 @@ export default function CredentialsTable({
     name,
   }];
 
+  // editing and deleting expandable begins here
+  const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
+
+  const handleExpanded = (rowData: StorageCredential) => {
+    let open = false;
+    const nextExpandedRowKeys = [] as string[];
+
+    expandedRowKeys.forEach(key => {
+      if (key === rowData.id) {
+        open = true;
+      } else {
+        nextExpandedRowKeys.push(key);
+      }
+    });
+
+    if (!open) {
+      nextExpandedRowKeys.push(rowData.id);
+    }
+    setExpandedRowKeys(nextExpandedRowKeys);
+  };
+  // editing and deleting ends here
+
 
   const { isLoading,
     isError,
@@ -115,21 +164,32 @@ export default function CredentialsTable({
     </div>
 
     <Table
-      loading={isLoading || isFetching}
+      loading={isLoading}
+      shouldUpdateScroll={false}
       data={data?.data.content}
       sortColumn={sortColumn}
       sortType={sortType}
       height={400}
       showHeader={true}
-      onRowClick={rowData => {
-        console.log(rowData);
-      }}
+      // onRowClick={rowData => {
+      //   console.log(rowData);
+      // }}
 
+      // renderRowExpanded={renderRowExpanded}
+      // rowExpandedHeight={300}
+      // expandedRowKeys={expandedRowKeys}
+      rowKey={'id'}
       onSortColumn={(sortColumn, sortType) => {
         console.log(sortColumn, sortType);
         setSortColumn(sortColumn);
         setSortType(sortType);
       }}>
+
+      <Column width={70} align="center">
+        <HeaderCell>Details</HeaderCell>
+        <ExpandCell expandedRowKeys={expandedRowKeys}
+          onChange={handleExpanded} />
+      </Column>
 
       <Column width={80} align="center">
         <CustomHeaderCell className="text-sm">Type</CustomHeaderCell>

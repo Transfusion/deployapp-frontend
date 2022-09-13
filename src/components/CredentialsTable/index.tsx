@@ -5,7 +5,7 @@ import { Input, InputGroup, TagPicker, Pagination } from "rsuite";
 import { Table, Column, HeaderCell, Cell, SortType, RowDataType } from 'rsuite-table';
 import styled from "styled-components";
 
-import MaterialReactTable, { MRT_ColumnDef } from 'material-react-table';
+import MaterialReactTable, { MRT_ColumnDef, MRT_Row } from 'material-react-table';
 import type {
   ColumnFiltersState,
   PaginationState,
@@ -41,7 +41,13 @@ const humanReadableDate = (d?: Date): string => {
 
 const AVAILABLE_TYPES = Object.entries(STORAGE_TYPES).map(([key, value]) => ({ key, label: value }));
 
-const renderRowExpanded = (data?: RowDataType) => {
+const renderDetailPanel = ({ row }: { row: MRT_Row<StorageCredential> }) => {
+  if (instanceOfS3Credential(row.original)) return <UpdateDeleteS3Row
+    s3_credential={row.original} />
+  return <>unknown</>
+}
+
+/* const renderRowExpanded = (data?: RowDataType) => {
   if (instanceOfS3Credential(data)) return <UpdateDeleteS3Row
     s3_credential={data} />
 }
@@ -62,7 +68,7 @@ const ExpandCell = ({ rowData, dataKey, expandedRowKeys, onChange, ...props }: O
       }
     />
   </Cell>
-);
+); */
 
 // table utilities end
 
@@ -134,7 +140,7 @@ export default function CredentialsTable({
   }];
 
   // editing and deleting expandable begins here
-  const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
+  /* const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
 
   const handleExpanded = (rowData: StorageCredential) => {
     let open = false;
@@ -152,7 +158,7 @@ export default function CredentialsTable({
       nextExpandedRowKeys.push(rowData.id);
     }
     setExpandedRowKeys(nextExpandedRowKeys);
-  };
+  }; */
   // editing and deleting ends here
 
 
@@ -257,6 +263,7 @@ export default function CredentialsTable({
       onSortingChange={setSorting}
       rowCount={data?.data.totalElements ?? 0}
 
+      renderDetailPanel={renderDetailPanel}
 
       state={{
         columnFilters,

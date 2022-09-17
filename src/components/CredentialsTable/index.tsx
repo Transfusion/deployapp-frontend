@@ -1,11 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
-import { ReactElement, useState, useMemo } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ReactElement, useState, useMemo, useEffect, useRef } from "react";
 import { BsSearch } from "react-icons/bs";
 import { Input, InputGroup, TagPicker, Pagination } from "rsuite";
 import { Table, Column, HeaderCell, Cell, SortType, RowDataType } from 'rsuite-table';
 import styled from "styled-components";
 
-import MaterialReactTable, { MRT_ColumnDef, MRT_Row } from 'material-react-table';
+import MaterialReactTable, { MRT_ColumnDef, MRT_Row, MRT_TableInstance } from 'material-react-table';
 import type {
   ColumnFiltersState,
   PaginationState,
@@ -13,7 +13,7 @@ import type {
 } from '@tanstack/react-table';
 
 import { StorageCredential, instanceOfS3Credential } from "../../api/interfaces/response/storage_credential";
-import { getStorageCredentials } from "../../api/StorageCredentials";
+import { getUnwrappedStorageCredentials } from "../../api/StorageCredentials";
 import { useAuth } from "../../contexts/AuthProvider";
 import { STORAGE_TYPES } from "../../utils/constants";
 
@@ -23,6 +23,8 @@ import IconButton from 'rsuite/IconButton';
 
 import { InnerCellProps } from 'rsuite-table/lib/Cell';
 import UpdateDeleteS3Row from "./UpdateDeleteS3Row";
+import { AxiosResponse } from "axios";
+import PagingSortingSpring from "../../api/interfaces/response/paging_sorting_spring";
 
 // table utilities start
 
@@ -40,12 +42,6 @@ const humanReadableDate = (d?: Date): string => {
 }
 
 const AVAILABLE_TYPES = Object.entries(STORAGE_TYPES).map(([key, value]) => ({ key, label: value }));
-
-const renderDetailPanel = ({ row }: { row: MRT_Row<StorageCredential> }) => {
-  if (instanceOfS3Credential(row.original)) return <UpdateDeleteS3Row
-    s3_credential={row.original} />
-  return <>unknown</>
-}
 
 /* const renderRowExpanded = (data?: RowDataType) => {
   if (instanceOfS3Credential(data)) return <UpdateDeleteS3Row
@@ -75,6 +71,7 @@ const ExpandCell = ({ rowData, dataKey, expandedRowKeys, onChange, ...props }: O
 
 export default function CredentialsTable({
   // getStorageCredentialsUseQuery,
+  enableEditing,
   noCredsBlurb
 }: {
   // getStorageCredentialsUseQuery: UseQueryResult<AxiosResponse<PagingSortingSpring<StorageCredential>>>,
@@ -96,14 +93,11 @@ export default function CredentialsTable({
   // };
 
   const [sorting, setSorting] = useState<SortingState>([]);
-  console.log("sorting", sorting);
   // const hasSort = sorting.length > 0;
   const apiSorting = sorting.map(({ id, desc }) => ({ key: id, direction: (desc ? 'desc' : 'asc') }));
 
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([{ id: "type", value: Object.values(STORAGE_TYPES) }]);
-
-  console.log("columnFilters", columnFilters);
 
   const nameColFilter = columnFilters.find(({ id }) => id === 'name');
 
@@ -161,16 +155,14 @@ export default function CredentialsTable({
   }; */
   // editing and deleting ends here
 
-
   const { isLoading,
     isError,
     error,
     data,
     isFetching,
-    isPreviousData, } = useQuery(queryKey, () => getStorageCredentials(page, size, apiSorting, name, types));
+    isPreviousData, } = useQuery(queryKey, () => getUnwrappedStorageCredentials(page, size, apiSorting, name, types));
 
-
-  const noCreds = !isLoading && data?.data.empty === true && types.length == AVAILABLE_TYPES.length && name == undefined;
+  const noCreds = !isLoading && data?.empty === true && types.length == AVAILABLE_TYPES.length && name == undefined;
 
   // table hooks begin here
   const columns = useMemo<MRT_ColumnDef<StorageCredential>[]>(
@@ -210,10 +202,49 @@ export default function CredentialsTable({
     ],
     [],
   );
+
+  // const [freshlyUpdatedRecords, setFreshlyUpdatedRecords] = useState(new Map<string, StorageCredential>());
+  // console.log("freshlyUpdatedRecords", freshlyUpdatedRecords);
+  // useEffect(() => { setFreshlyUpdatedRecords(new Map<string, StorageCredential>()) }, [isLoading, isFetching]);
+  const tableInstanceRef = useRef<MRT_TableInstance<StorageCredential>>(null);
+  const queryClient = useQueryClient();
   // table hooks end here
 
   // ... because hooks cannot be called conditionally
   if (noCreds && noCredsBlurb !== undefined) return noCredsBlurb;
+
+  // table helpers begin here
+  // const _content = data?.content ?? [];
+  const content = data?.content ?? [];
+  const rowCount = data?.totalElements ?? 0;
+
+  // const content = _content.map(cred => freshlyUpdatedRecords.has(cred.id) ? freshlyUpdatedRecords.get(cred.id) : cred) as StorageCredential[];
+
+
+  const renderDetailPanel = ({ row }: { row: MRT_Row<StorageCredential> }) => {
+    if (instanceOfS3Credential(row.original)) return <UpdateDeleteS3Row
+      s3_credential={row.original}
+      onSuccess={(resp) => {
+        const { credential } = resp.data;
+        if (!credential) return; // should never reach this
+        const { id } = credential;
+        // const updatedRecordsClone = new Map(freshlyUpdatedRecords);
+        // updatedRecordsClone.set(id, credential);
+        // setFreshlyUpdatedRecords(updatedRecordsClone);
+        if (data == null) return;
+        const clonedData = { ...data };
+        clonedData.content = clonedData.content.map(cred => cred.id == id ? credential : cred);
+        queryClient.setQueryData<PagingSortingSpring<StorageCredential>>(queryKey, clonedData);
+      }}
+
+      onDeleteSuccess={async (resp) => {
+        tableInstanceRef.current?.toggleAllRowsExpanded(false);
+        queryClient.resetQueries(['storage_creds']);
+      }}
+    />
+    return <>unknown</>
+  }
+  // table helpers end here
 
   return <>
     {/* <div className="py-5 flex flex-wrap flex-row gap-2 justify-end">
@@ -242,7 +273,8 @@ export default function CredentialsTable({
 
     <MaterialReactTable
       columns={columns}
-      data={data?.data.content ?? []}
+      data={content}
+      tableInstanceRef={tableInstanceRef}
       initialState={{ showColumnFilters: true, density: 'compact' }}
       enableGlobalFilter={false}
       manualFiltering
@@ -261,9 +293,9 @@ export default function CredentialsTable({
       // onGlobalFilterChange={setGlobalFilter}
       onPaginationChange={setPagination}
       onSortingChange={setSorting}
-      rowCount={data?.data.totalElements ?? 0}
+      rowCount={rowCount}
 
-      renderDetailPanel={renderDetailPanel}
+      renderDetailPanel={enableEditing && renderDetailPanel}
 
       state={{
         columnFilters,

@@ -103,6 +103,14 @@ export function getStorageCredentials(page: Number, size = 15, sort?: { key: str
     return axiosClient.get<PagingSortingSpring<StorageCredential>>("/api/v1/credentials", { params })
 }
 
+export function getUnwrappedStorageCredentials(page: Number, size = 15, sort?: { key: string, direction: string }[], name?: string, types?: string[]) {
+    return getStorageCredentials(page, size, sort, name, types).then(resp => resp.data);
+}
+
+export function deleteStorageCredential(id: string) {
+    return axiosClient.delete<void>(`/api/v1/credentials/S3/${id}`);
+}
+
 export function createS3Credential(data: CreateS3CredentialRequest) {
     return axiosClient.post<CreateS3CredentialResponse>("/api/v1/credentials/S3", data);
 }

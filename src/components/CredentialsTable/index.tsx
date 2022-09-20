@@ -25,6 +25,7 @@ import { InnerCellProps } from 'rsuite-table/lib/Cell';
 import UpdateDeleteS3Row from "./UpdateDeleteS3Row";
 import { AxiosResponse } from "axios";
 import PagingSortingSpring from "../../api/interfaces/response/paging_sorting_spring";
+import _ from "lodash";
 
 // table utilities start
 
@@ -72,12 +73,14 @@ const ExpandCell = ({ rowData, dataKey, expandedRowKeys, onChange, ...props }: O
 export default function CredentialsTable({
   // getStorageCredentialsUseQuery,
   enableEditing,
-  noCredsBlurb
+  noCredsBlurb,
+  onCredentialSelected
 }: {
   // getStorageCredentialsUseQuery: UseQueryResult<AxiosResponse<PagingSortingSpring<StorageCredential>>>,
   enableEditing?: Boolean,
   noCredsBlurb?: ReactElement,
 
+  onCredentialSelected?: (id?: string) => any
 }) {
   // const [sortColumn, setSortColumn] = useState<string>();
   // const [sortType, setSortType] = useState<SortType>();
@@ -206,6 +209,13 @@ export default function CredentialsTable({
   // const [freshlyUpdatedRecords, setFreshlyUpdatedRecords] = useState(new Map<string, StorageCredential>());
   // console.log("freshlyUpdatedRecords", freshlyUpdatedRecords);
   // useEffect(() => { setFreshlyUpdatedRecords(new Map<string, StorageCredential>()) }, [isLoading, isFetching]);
+  const [rowSelection, setRowSelection] = useState({});
+  useEffect(() => {
+    if (_.isUndefined(onCredentialSelected)) return;
+    if (!_.isEmpty(rowSelection)) onCredentialSelected(_.keys(rowSelection)[0]);
+    else onCredentialSelected(undefined);
+  }, [rowSelection]);
+
   const tableInstanceRef = useRef<MRT_TableInstance<StorageCredential>>(null);
   const queryClient = useQueryClient();
   // table hooks end here
@@ -274,6 +284,7 @@ export default function CredentialsTable({
     <MaterialReactTable
       columns={columns}
       data={content}
+      getRowId={({ id }) => id}
       tableInstanceRef={tableInstanceRef}
       initialState={{ showColumnFilters: true, density: 'compact' }}
       enableGlobalFilter={false}
@@ -297,7 +308,12 @@ export default function CredentialsTable({
 
       renderDetailPanel={enableEditing && renderDetailPanel}
 
+      enableRowSelection={onCredentialSelected !== undefined}
+      enableSelectAll={false}
+      onRowSelectionChange={(foo: any) => setRowSelection(foo())}
+
       state={{
+        rowSelection,
         columnFilters,
         // globalFilter,
         isLoading,

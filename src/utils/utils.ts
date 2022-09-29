@@ -9,3 +9,8 @@ export function formatBytes(bytes: number, decimals = 2) {
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 }
+
+export const humanReadableDate = (d?: Date): string => {
+  if (!d) return "Never";
+  return new Date(d).toLocaleString();
+}

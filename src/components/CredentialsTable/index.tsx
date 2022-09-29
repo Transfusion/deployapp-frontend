@@ -26,6 +26,7 @@ import UpdateDeleteS3Row from "./UpdateDeleteS3Row";
 import { AxiosResponse } from "axios";
 import PagingSortingSpring from "../../api/interfaces/response/paging_sorting_spring";
 import _ from "lodash";
+import { humanReadableDate } from "../../utils/utils";
 
 // table utilities start
 
@@ -36,11 +37,6 @@ const CustomHeaderCell = styled(HeaderCell).attrs({
 const CustomCell = styled(Cell).attrs({
   className: 'text-base'
 })``;
-
-const humanReadableDate = (d?: Date): string => {
-  if (!d) return "Never";
-  return new Date(d).toLocaleString();
-}
 
 const AVAILABLE_TYPES = Object.entries(STORAGE_TYPES).map(([key, value]) => ({ key, label: value }));
 

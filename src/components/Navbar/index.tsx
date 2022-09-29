@@ -59,6 +59,10 @@ export default function Navbar() {
         <NonDropdownSpan>Manage Storage</NonDropdownSpan>
       </NavLink>
 
+      <NavLink to="/binaries" >
+        <NonDropdownSpan>App Binaries</NonDropdownSpan>
+      </NavLink>
+
       {profile?.authenticated && <NavLink to="/profile" >
         <NonDropdownSpan>Profile</NonDropdownSpan>
       </NavLink>}
@@ -103,6 +107,10 @@ export default function Navbar() {
 
       <NavLink to="/storage" >
         <NonDropdownSpan>Manage Storage</NonDropdownSpan>
+      </NavLink>
+
+      <NavLink to="/binaries" >
+        <NonDropdownSpan>App Binaries</NonDropdownSpan>
       </NavLink>
 
       {profile?.authenticated && <NavLink to="/profile" >

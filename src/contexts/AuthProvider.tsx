@@ -1,14 +1,15 @@
 import * as React from 'react'
 import { PropsWithChildren } from 'react'
 import Profile from '../api/interfaces/response/profile'
-import { getProfile } from '../api/Profile'
+import { getUnwrappedProfile } from '../api/Profile'
 import { Logout } from "../api/Logout"
-import { useAsync } from '../utils/hooks'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { AxiosResponse, AxiosError } from 'axios'
 
 const defaultValue = {
   // login: () => { },
-  logout: () => { },
-  profile: {} as Profile
+  logout: (() => { }) as Function,
+  profile: {} as Profile | undefined
 }
 
 /* async function bootstrapAppData() {
@@ -33,33 +34,53 @@ export const AuthContext = React.createContext(defaultValue);
 AuthContext.displayName = 'AuthContext'
 
 function AuthProvider(props: PropsWithChildren<{}>) {
-  const {
-    data: profile,
-    status,
-    error,
-    isLoading,
-    isIdle,
+  // const {
+  //   data: profile,
+  //   status,
+  //   error,
+  //   isLoading,
+  //   isIdle,
+  //   isError,
+  //   isSuccess,
+  //   run,
+  //   setData,
+  // } = useAsync({});
+
+  const { isLoading,
     isError,
-    isSuccess,
-    run,
-    setData,
-  } = useAsync({});
+    error,
+    data: profile,
+    isFetching,
+    isPreviousData, } = useQuery(['profile'], () => getUnwrappedProfile(), { refetchOnWindowFocus: true });
 
-  React.useEffect(() => {
-    run((async () => {
-      return (await getProfile()).data;
-    })())
-  }, [run])
+  const queryClient = useQueryClient();
 
-  const logout = React.useCallback(async () => {
-    await Logout();
-    // queryCache.clear()
-    // setData(null)
-    
-    run((async () => {
-      return (await getProfile()).data;
-    })())
-  }, [run])
+  // deleting
+  const { isLoading: logoutLoading, isSuccess: logoutSuccess, error: logoutError, mutate: logout } = useMutation<AxiosResponse<void, any>, AxiosError, string>((id: string) => {
+    return Logout();
+  }, {
+    // this object is a MutateOptions
+    onSuccess: async () => {
+      queryClient.invalidateQueries(['profile']);
+    }
+  });
+
+
+  // React.useEffect(() => {
+  //   run((async () => {
+  //     return (await getProfile()).data;
+  //   })())
+  // }, [run])
+
+  // const logout = React.useCallback(async () => {
+  //   await Logout();
+  //   // queryCache.clear()
+  //   // setData(null)
+
+  //   run((async () => {
+  //     return (await getProfile()).data;
+  //   })())
+  // }, [run])
 
   const value = React.useMemo(
     () => ({ profile, logout, /*login, logout, register*/ }),

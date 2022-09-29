@@ -68,7 +68,7 @@ export default function Navbar() {
       </NavLink>}
 
       {profile?.authenticated ?
-        <NonDropdownSpan onClick={logout}>Logout</NonDropdownSpan> :
+        <NonDropdownSpan onClick={() => { logout() }}>Logout</NonDropdownSpan> :
         <NavLink to="/login" >
           <NonDropdownSpan>Login</NonDropdownSpan>
         </NavLink>}
@@ -122,7 +122,7 @@ export default function Navbar() {
       </NavLink>}
 
       {profile?.authenticated ?
-        <NonDropdownSpan onClick={logout}>Logout</NonDropdownSpan> :
+        <NonDropdownSpan onClick={() => { logout() }}>Logout</NonDropdownSpan> :
         <NavLink to="/login" >
           <NonDropdownSpan>Login</NonDropdownSpan>
         </NavLink>}

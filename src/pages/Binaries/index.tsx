@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { PaginationState, SortingState } from "@tanstack/react-table";
+import { ColumnFiltersState, PaginationState, SortingState } from "@tanstack/react-table";
 import MaterialReactTable, { MRT_ColumnDef, MRT_TableInstance } from "material-react-table";
 import { useMemo, useRef, useState } from "react";
 import { getUnwrappedBinaries } from "../../api/AppBinary";
 import { AppBinary } from "../../api/interfaces/response/app_binary";
-import { StorageCredential } from "../../api/interfaces/response/storage_credential";
 import { useAuth } from "../../contexts/AuthProvider";
+import { BINARY_TYPES } from "../../utils/constants";
 import { humanReadableDate } from "../../utils/utils";
 
 export default function Binaries() {
@@ -13,8 +13,13 @@ export default function Binaries() {
   const { profile } = useAuth();
 
   const [sorting, setSorting] = useState<SortingState>([]);
-  // const hasSort = sorting.length > 0;
   const apiSorting = sorting.map(({ id, desc }) => ({ key: id, direction: (desc ? 'desc' : 'asc') }));
+
+  // type and name
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
+    { id: "type", value: Object.values(BINARY_TYPES) }
+  ]);
+
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -23,17 +28,22 @@ export default function Binaries() {
 
   const { pageIndex: page, pageSize: size } = pagination;
 
+  const types = (columnFilters.find(({ id }) => id === "type")?.value ?? []) as string[];
+
+  const search = columnFilters.filter(({ id }) => id !== "type").map(({ id, value }) => ({
+    key: id, operation: 'like', value
+  } as { key: string, operation: string, value: string }));
+
+
   const queryKey = ['storage_creds', {
     page,
     size,
     // organization,
     authenticated: profile?.authenticated,
 
-    // sortColumn,
-    // sortType,
     apiSorting,
-    // types,
-    // name,
+    types,
+    search,
   }];
 
   const { isLoading,
@@ -41,8 +51,7 @@ export default function Binaries() {
     error,
     data,
     isFetching,
-    isPreviousData, } = useQuery(queryKey, () => getUnwrappedBinaries(page, size, undefined, apiSorting
-      // , types
+    isPreviousData, } = useQuery(queryKey, () => getUnwrappedBinaries(page, size, search, apiSorting, types
     ));
 
   const tableInstanceRef = useRef<MRT_TableInstance<AppBinary>>(null);
@@ -56,16 +65,20 @@ export default function Binaries() {
       {
         accessorKey: 'type',
         header: 'Type',
-        // filterSelectOptions: [
-        //   { text: 'S3', value: 'S3' },
-        //   { text: 'FTP', value: 'FTP' },
-        // ],
-        // filterVariant: 'multi-select',
-        enableSorting: true,
+        filterSelectOptions: [
+          { text: 'IPA', value: 'IPA' },
+          { text: 'APK', value: 'APK' },
+        ],
+        filterVariant: 'multi-select',
+        enableSorting: false,
       },
       {
         accessorKey: 'name',
         header: 'Name',
+      },
+      {
+        accessorKey: 'identifier',
+        header: 'Identifier',
       },
       {
         accessorKey: 'version',
@@ -91,9 +104,6 @@ export default function Binaries() {
   return <div className="mx-auto px-10">
     <h1 className="py-10 subpixel-antialiased font-semibold text-5xl">App Binaries</h1>
 
-
-
-
     <MaterialReactTable
       columns={columns}
       data={content}
@@ -113,7 +123,7 @@ export default function Binaries() {
           }
           : undefined
       }
-      // onColumnFiltersChange={setColumnFilters}
+      onColumnFiltersChange={setColumnFilters}
       // onGlobalFilterChange={setGlobalFilter}
       onPaginationChange={setPagination}
       onSortingChange={setSorting}
@@ -127,7 +137,7 @@ export default function Binaries() {
 
       state={{
         // rowSelection,
-        // columnFilters,
+        columnFilters,
         // globalFilter,
         isLoading,
         pagination,

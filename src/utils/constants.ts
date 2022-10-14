@@ -5,5 +5,6 @@ export const STORAGE_TYPES = {
 
 export const BINARY_TYPES = {
   IPA: 'IPA',
-  APK: 'APK'
+  APK: 'APK',
+  // AAB: "AAB"
 }

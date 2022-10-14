@@ -1,4 +1,5 @@
 import { Json } from "../../../types/misc";
+import { BINARY_TYPES } from "../../../utils/constants";
 
 type AppBinaryType = 'IPA' | 'APK'
 
@@ -8,16 +9,16 @@ type AppBinaryType = 'IPA' | 'APK'
 export interface AppBinary {
   id: string;
   type: AppBinaryType;
-  version: String,
-  build: String,
+  version: string,
+  build: string,
   uploadDate: Date,
-  name: String,
+  name: string,
   lastInstallDate?: Date,
-  identifier: String,
-  assetsOnFrontPage: Boolean,
-  sizeBytes: Number,
-  fileName: String,
-  storageCredential: String,
+  identifier: string,
+  assetsOnFrontPage: boolean,
+  sizeBytes: number,
+  fileName: string,
+  storageCredential: string,
 }
 
 export interface Ipa extends AppBinary {
@@ -34,4 +35,9 @@ export interface Ipa extends AppBinary {
   teamName?: string,
   expiredDate?: Date,
   plistJson: Json,
+}
+
+export function instanceOfIpa(object?: AppBinary): object is Ipa {
+  return object !== undefined && object !== null
+    && object?.type === BINARY_TYPES.IPA;
 }

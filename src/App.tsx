@@ -11,6 +11,7 @@ import Home from './pages/Home';
 import { userInfo } from 'os';
 import ManageStorage from './pages/ManageStorage';
 import Binaries from './pages/Binaries';
+import ManageBinaryPage from './pages/ManageBinaryPage';
 
 
 // const Home = () => (
@@ -52,6 +53,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/storage" element={<ManageStorage />} />
             <Route path="/binaries" element={<Binaries />} />
+            <Route path="/manage/:binaryId" element={<ManageBinaryPage />} />
           </Routes>
         </AuthProvider>
       </Router>

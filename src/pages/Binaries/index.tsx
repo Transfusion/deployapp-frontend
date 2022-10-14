@@ -1,7 +1,11 @@
+import { AccountCircle, Send } from "@mui/icons-material";
+import EditIcon from '@mui/icons-material/Edit';
+import { MenuItem, ListItemIcon } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { ColumnFiltersState, PaginationState, SortingState } from "@tanstack/react-table";
 import MaterialReactTable, { MRT_ColumnDef, MRT_TableInstance } from "material-react-table";
 import { useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getUnwrappedBinaries } from "../../api/AppBinary";
 import { AppBinary } from "../../api/interfaces/response/app_binary";
 import { useAuth } from "../../contexts/AuthProvider";
@@ -9,6 +13,7 @@ import { BINARY_TYPES } from "../../utils/constants";
 import { humanReadableDate } from "../../utils/utils";
 
 export default function Binaries() {
+  const navigate = useNavigate();
 
   const { profile } = useAuth();
 
@@ -75,19 +80,23 @@ export default function Binaries() {
       {
         accessorKey: 'name',
         header: 'Name',
+        size: 150,
       },
       {
         accessorKey: 'identifier',
         header: 'Identifier',
+        size: 250,
       },
       {
         accessorKey: 'version',
         header: 'Version',
+        size: 100,
         enableColumnFilter: false
       },
       {
         accessorKey: 'build',
         header: 'Build',
+        size: 100,
         enableColumnFilter: false
       },
       {
@@ -105,6 +114,8 @@ export default function Binaries() {
     <h1 className="py-10 subpixel-antialiased font-semibold text-5xl">App Binaries</h1>
 
     <MaterialReactTable
+      enableRowActions
+      enableColumnResizing
       columns={columns}
       data={content}
       getRowId={({ id }) => id}
@@ -134,6 +145,36 @@ export default function Binaries() {
       // enableRowSelection={onCredentialSelected !== undefined}
       enableSelectAll={false}
       // onRowSelectionChange={(foo: any) => setRowSelection(foo())}
+
+      renderRowActionMenuItems={({ closeMenu, row }) => [
+        <MenuItem
+          key={0}
+          onClick={() => {
+            // View profile logic...
+            navigate(`/manage/${row.id}`);
+            closeMenu();
+          }}
+          sx={{ m: 0 }}
+        >
+          <ListItemIcon>
+            <EditIcon />
+          </ListItemIcon>
+          Manage
+        </MenuItem>,
+        <MenuItem
+          key={1}
+          onClick={() => {
+            // Send email logic...
+            closeMenu();
+          }}
+          sx={{ m: 0 }}
+        >
+          <ListItemIcon>
+            <Send />
+          </ListItemIcon>
+          Download page
+        </MenuItem>,
+      ]}
 
       state={{
         // rowSelection,

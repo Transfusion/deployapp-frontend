@@ -112,6 +112,6 @@ export default function ManageStorage() {
       </div>
 
     </form>}
-    <CredentialsTable />
+    <CredentialsTable enableEditing/>
   </div>
 }

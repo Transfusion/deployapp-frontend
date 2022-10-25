@@ -19,6 +19,7 @@ export interface AppBinary {
   sizeBytes: number,
   fileName: string,
   storageCredential: string,
+  description?: string
 }
 
 export interface Ipa extends AppBinary {

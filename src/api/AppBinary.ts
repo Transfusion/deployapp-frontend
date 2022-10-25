@@ -1,5 +1,8 @@
-import axiosClient from "./client"
+import axiosClient from "./client";
 import { AppBinary } from "./interfaces/response/app_binary";
+import { AppBinaryAsset } from "./interfaces/response/app_binary_asset";
+import { AppBinaryJob } from "./interfaces/response/app_binary_job";
+import { GenerateAssetResult } from "./interfaces/response/generate_asset";
 import PagingSortingSpring from "./interfaces/response/paging_sorting_spring";
 
 export function getBinaries(page: Number, size = 15,
@@ -46,4 +49,36 @@ export function getBinary(id: string) {
 
 export function getUnwrappedBinary(id: string) {
   return getBinary(id).then(resp => resp.data);
+}
+
+export function generateAsset(id: string, type: string) {
+  return axiosClient.post<GenerateAssetResult>(`/storage/api/v1/app/binary/${id}/generateAsset`, {
+    type
+  });
+}
+
+export function generateAssetUnwrapped(id: string, type: string) {
+  return generateAsset(id, type).then(resp => resp.data);
+}
+
+export function getJobs(id: string) {
+  return axiosClient.get<AppBinaryJob[]>(`/storage/api/v1/app/binary/${id}/jobs`);
+}
+
+export function getUnwrappedJobs(id: string) {
+  return getJobs(id).then(resp => resp.data);
+}
+
+export function getAssets(id: string) {
+  return axiosClient.get<AppBinaryAsset[]>(`/storage/api/v1/app/binary/${id}/assets`);
+}
+
+export function getUnwrappedAssets(id: string) {
+  return getAssets(id).then(resp => resp.data);
+}
+
+export function updateAppBinaryDescription(id: string, description: string) {
+  return axiosClient.put<AppBinary>(`/storage/api/v1/app/binary/${id}/description`, {
+    description
+  });
 }

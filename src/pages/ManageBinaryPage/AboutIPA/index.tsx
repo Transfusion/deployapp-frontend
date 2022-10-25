@@ -1,14 +1,6 @@
-import { AppBinary, Ipa } from "../../../api/interfaces/response/app_binary"
+import { Ipa } from "../../../api/interfaces/response/app_binary"
+import { InfoCell } from "../../../components/InfoCell"
 import { formatBytes, humanReadableDate } from "../../../utils/utils"
-
-function InfoCell({ title, value }: {
-  title: string, value: string
-}) {
-  return <div>
-    <h3 className="font-semibold">{title}</h3>
-    <p className="text-gray-700">{value}</p>
-  </div>
-}
 
 export default function AboutIPA({ binary }: {
   binary: Ipa

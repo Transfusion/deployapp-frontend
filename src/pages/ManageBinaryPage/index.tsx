@@ -71,9 +71,14 @@ export default function EditBinaryPage() {
     </div>;
   }
 
+  const iconURL = `${process.env.REACT_APP_BASE_URL}storage/api/v1/app/binary/${data?.id}/icon`;
+
   return <div className="mx-auto px-10" data-color-mode="light">
     <h1 className={classNames("py-10", "subpixel-antialiased", "font-semibold", "text-5xl")}  >Editing {data?.name}</h1>
 
+    <a target={"_blank"} href={iconURL}>
+      <img className="inline-block max-w-[114px] rounded-3xl shadow-md mb-5" src={iconURL} />
+    </a>
     {instanceOfIpa(data) && <AboutIPA binary={data} />}
 
     {/* Description */}
@@ -84,13 +89,6 @@ export default function EditBinaryPage() {
     {/* list of downloadable files */}
     <AssetsOverview binary={data} />
     {instanceOfIpa(data) && <IPAAssets binary={data} />}
-
-    {/* <h3 className="font-semibold text-4xl">Info</h3> */}
-
-    {/* core info */}
-    {/* expanding panel to show two column */}
-
-    <h3 className="font-semibold text-4xl">About</h3>
 
 
     <div className="flex flex-row items-center gap-3">

@@ -1,6 +1,8 @@
 import { Ipa } from "../../../api/interfaces/response/app_binary"
 import { InfoCell } from "../../../components/InfoCell"
 import { formatBytes, humanReadableDate } from "../../../utils/utils"
+import { InfoPlistPanel } from "./components/InfoPlistPanel"
+import MobileProvisionDetails from "./components/MobileProvisionDetails"
 
 export default function AboutIPA({ binary }: {
   binary: Ipa
@@ -46,7 +48,11 @@ export default function AboutIPA({ binary }: {
 
     </div>
 
+    <h3 className="font-semibold text-2xl">info.plist Details</h3>
+
+    {binary.plistJson && <InfoPlistPanel plist={binary.plistJson} />}
+
     <h3 className="font-semibold text-2xl">MobileProvision Details</h3>
-    <p className="text-gray-500">Not available.</p>
+    <MobileProvisionDetails id={binary.id} />
   </>
 }

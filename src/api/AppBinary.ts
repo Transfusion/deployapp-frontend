@@ -3,6 +3,7 @@ import { AppBinary } from "./interfaces/response/app_binary";
 import { AppBinaryAsset } from "./interfaces/response/app_binary_asset";
 import { AppBinaryJob } from "./interfaces/response/app_binary_job";
 import { GenerateAssetResult } from "./interfaces/response/generate_asset";
+import { IpaMobileprovision } from "./interfaces/response/ipa_mobileprovision";
 import PagingSortingSpring from "./interfaces/response/paging_sorting_spring";
 
 export function getBinaries(page: Number, size = 15,
@@ -81,4 +82,12 @@ export function updateAppBinaryDescription(id: string, description: string) {
   return axiosClient.put<AppBinary>(`/storage/api/v1/app/binary/${id}/description`, {
     description
   });
+}
+
+export function getMobileprovisions(id: string) {
+  return axiosClient.get<IpaMobileprovision[]>(`/storage/api/v1/app/binary/${id}/mobileprovisions`);
+}
+
+export function getUnwrappedMobileprovisions(id: string) {
+  return getMobileprovisions(id).then(resp => resp.data);
 }

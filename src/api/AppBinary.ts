@@ -84,6 +84,12 @@ export function updateAppBinaryDescription(id: string, description: string) {
   });
 }
 
+export function updateAppBinaryAvailable(id: string, available: boolean) {
+  return axiosClient.put<AppBinary>(`/storage/api/v1/app/binary/${id}/available`, {
+    available
+  });
+}
+
 export function getMobileprovisions(id: string) {
   return axiosClient.get<IpaMobileprovision[]>(`/storage/api/v1/app/binary/${id}/mobileprovisions`);
 }

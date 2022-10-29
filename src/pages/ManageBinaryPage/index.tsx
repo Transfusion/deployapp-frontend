@@ -1,14 +1,15 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AxiosError, AxiosResponse } from "axios";
 import classNames from "classnames";
-import { BsArrowRepeat } from "react-icons/bs";
+import { BsArrowRepeat, BsFillTrashFill } from "react-icons/bs";
 import { useParams } from "react-router-dom";
-import { getUnwrappedBinary, getUnwrappedJobs } from "../../api/AppBinary";
+import { getUnwrappedBinary, getUnwrappedJobs, updateAppBinaryAvailable } from "../../api/AppBinary";
 import { AppBinary, instanceOfIpa } from "../../api/interfaces/response/app_binary";
 import { AppBinaryJob } from "../../api/interfaces/response/app_binary_job";
 import { useAuth } from "../../contexts/AuthProvider";
 import AboutIPA from "./AboutIPA";
 import AssetsOverview from "./AssetsOverview";
+import ToggleSuccessfulAlert from "./components/ToggleSuccessfulAlert";
 import EditDescription from "./EditDescription";
 // import Description from "./Description";
 import IPAAssets from "./IPAAssets";
@@ -51,6 +52,22 @@ export default function EditBinaryPage() {
     data: jobsData,
     isFetching: jobsIsFetching, isPreviousData: jobIsPreviousData } = useQuery<AppBinaryJob[], AxiosError>(jobsQueryKey, () => getUnwrappedJobs(binaryId!!));
 
+  /* mutations begin here */
+
+  const { isLoading: toggleAvailableLoading, isSuccess: toggleAvailableSuccess, error: toggleAvailableError, mutate: toggleAvailable } = useMutation<AxiosResponse<AppBinary, any>, AxiosError, { id: string, req: boolean }>(({ id, req }: {
+    id: string, req: boolean
+  }) => {
+    return updateAppBinaryAvailable(id, req);
+  }, {
+    // this object is a MutateOptions
+    // onSuccess
+  });
+
+  const toggleLoading = toggleAvailableLoading;
+  const toggleSuccess = toggleAvailableSuccess;
+  const toggleError = toggleAvailableError;
+
+
   if (isError) return <div className="min-h-full flex justify-center items-center">
     <div className="text-center">
       <h3 className="font-semibold text-4xl">An error occurred</h3>
@@ -73,7 +90,7 @@ export default function EditBinaryPage() {
 
   const iconURL = `${process.env.REACT_APP_BASE_URL}storage/api/v1/app/binary/${data?.id}/icon`;
 
-  return <div className="mx-auto px-10" data-color-mode="light">
+  return <div className="mx-auto px-10 mb-10" data-color-mode="light">
     <h1 className={classNames("py-10", "subpixel-antialiased", "font-semibold", "text-5xl")}  >Editing {data?.name}</h1>
 
     <a target={"_blank"} href={iconURL}>
@@ -110,9 +127,43 @@ export default function EditBinaryPage() {
     <h3 className="font-semibold text-4xl">Description</h3>
     <EditDescription binary={data} />
 
-    <h3 className="font-semibold text-4xl">Settings</h3>
-    {/* visible, timeframe, assets public? */}
+    <h3 className="font-semibold text-4xl pb-2">Settings</h3>
+    {/* available, timeframe, password, assets public? */}
 
-    {/* delete button */}
+    <div>
+      <label className="inline-flex items-center">
+        <input
+          disabled={toggleLoading}
+          defaultChecked={data.available}
+          onChange={(e) => {
+            toggleAvailable({ id: binaryId!!, req: e.target.checked });
+          }}
+          // {...register('skipTestPublicAccess')} 
+
+          className="form-checkbox w-7 h-7 mr-2 focus:ring-indigo-400 focus:ring-opacity-25 border border-gray-300 rounded" type="checkbox" />
+        <p className="text-base font-semibold">Available to public</p>
+      </label>
+    </div>
+
+    {/* success methods here */}
+    {toggleSuccess && <ToggleSuccessfulAlert />}
+
+    <div>
+      {/* delete button */}
+      <button
+        // disabled={disableOperations}
+        onClick={() => {
+          // deleteExistingStorageCredential(s3_credential.id) 
+        }}
+        className={classNames('text-base', 'text-red-700', 'hover:text-white', 'border-2', 'border-red-700', 'hover:bg-red-800', 'focus:ring-4', 'focus:outline-none', 'focus:ring-red-300', 'font-medium', 'text-sm', 'p-2', 'text-center', 'mt-2',
+          // 'mr-2', 'mb-2',
+          // 'dark:border-blue-500', 'dark:hover:text-white', 'dark:hover:bg-blue-600', 'dark:focus:ring-blue-800'
+
+        )}>
+        <BsFillTrashFill className="inline-block mr-2" size={'1.5em'} />
+        Delete {data?.name} PERMANENTLY
+      </button>
+    </div>
+
   </div>
 }

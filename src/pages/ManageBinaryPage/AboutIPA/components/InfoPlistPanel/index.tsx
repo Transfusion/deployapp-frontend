@@ -14,7 +14,7 @@ export function InfoPlistPanel({ plist }: { plist: Object }) {
     })}>
       {Object.entries(plist).map(([l, r]) =>
         <>
-          <div className="font-semibold break-all border-solid border-b-2 border-gray-400">{l}</div>
+          <div key={l} className="font-semibold break-all border-solid border-b-2 border-gray-400">{l}</div>
           <div className="break-all border-solid border-b-2 border-gray-400">{JSON.stringify(r)}</div>
         </>
       )}

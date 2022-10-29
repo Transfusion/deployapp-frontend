@@ -3,6 +3,7 @@ import MDEditor from '@uiw/react-md-editor';
 import { AxiosError, AxiosResponse } from 'axios';
 import classNames from 'classnames';
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { BsSaveFill } from 'react-icons/bs';
 import { updateAppBinaryDescription } from '../../../api/AppBinary';
 import { AppBinary } from '../../../api/interfaces/response/app_binary';
 import CreateSuccessfulAlert from './components/CreateSuccessfulAlert';
@@ -60,7 +61,10 @@ export default function EditDescription({ binary }: { binary: AppBinary }) {
           // 'mr-2', 'mb-2',
           // 'dark:border-blue-500', 'dark:hover:text-white', 'dark:hover:bg-blue-600', 'dark:focus:ring-blue-800'
 
-        )}>Save</button>
+        )}>
+        <BsSaveFill className="inline-block mr-2" size={'1.5em'} />
+        Save
+      </button>
     </div>
 
     {isSuccess && <CreateSuccessfulAlert />}

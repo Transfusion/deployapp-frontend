@@ -20,6 +20,7 @@ export interface AppBinary {
   fileName: string,
   storageCredential: string,
   description?: string
+  available: boolean,
 }
 
 export interface Ipa extends AppBinary {

@@ -5,11 +5,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* tailwind doesn't style lists by default */
+@layer base {
+
+  ul,
+  ol {
+    list-style: revert;
+  }
+}
 
 html,
 body,
 #root,
-#root>div {
+#root>div:not('#Toastify') {
   min-height: 100vh;
   /* prevent macos swipe to navigate backwards */
   overscroll-behavior-x: none;

@@ -5,6 +5,7 @@ import { AppBinaryJob } from "./interfaces/response/app_binary_job";
 import { GenerateAssetResult } from "./interfaces/response/generate_asset";
 import { IpaMobileprovision } from "./interfaces/response/ipa_mobileprovision";
 import PagingSortingSpring from "./interfaces/response/paging_sorting_spring";
+import { PublicUserProfile } from "./interfaces/response/public_user_profile";
 
 export function getBinaries(page: Number, size = 15,
   search?: { key: string, operation: string, value: string }[],
@@ -50,6 +51,22 @@ export function getBinary(id: string) {
 
 export function getUnwrappedBinary(id: string) {
   return getBinary(id).then(resp => resp.data);
+}
+
+export function getBinaryPublic(id: string) {
+  return axiosClient.get<AppBinary>(`/storage/api/v1/app/binary/${id}/public`);
+}
+
+export function getUnwrappedBinaryPublic(id: string) {
+  return getBinaryPublic(id).then(resp => resp.data);
+}
+
+export function getPublicUserProfile(userId: string) {
+  return axiosClient.get<PublicUserProfile>(`/api/v1/utility/public/user/${userId}`);
+}
+
+export function getUnwrappedPublicUserProfile(userId: string) {
+  return getPublicUserProfile(userId).then(resp => resp.data);
 }
 
 export function generateAsset(id: string, type: string) {

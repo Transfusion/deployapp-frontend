@@ -21,6 +21,9 @@ export interface AppBinary {
   storageCredential: string,
   description?: string
   available: boolean,
+
+  organizationId?: string,
+  userId?: string,
 }
 
 export interface Ipa extends AppBinary {

@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import classNames from "classnames";
 import { BsArrowRepeat, BsFillTrashFill } from "react-icons/bs";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { getUnwrappedBinary, getUnwrappedJobs, updateAppBinaryAvailable } from "../../api/AppBinary";
 import { AppBinary, instanceOfIpa } from "../../api/interfaces/response/app_binary";
 import { AppBinaryJob } from "../../api/interfaces/response/app_binary_job";
@@ -10,6 +10,7 @@ import { useAuth } from "../../contexts/AuthProvider";
 import AboutIPA from "./AboutIPA";
 import AssetsOverview from "./AssetsOverview";
 import ToggleSuccessfulAlert from "./components/ToggleSuccessfulAlert";
+import ToggleUnsuccessfulAlert from "./components/ToggleUnsuccessfulAlert";
 import EditDescription from "./EditDescription";
 // import Description from "./Description";
 import IPAAssets from "./IPAAssets";
@@ -65,6 +66,11 @@ export default function EditBinaryPage() {
 
   const toggleLoading = toggleAvailableLoading;
   const toggleSuccess = toggleAvailableSuccess;
+  /**
+   * when adding more toggles, perhaps use null coalescing
+   * null ||  null || "foo"
+   * > 'foo'
+   */
   const toggleError = toggleAvailableError;
 
 
@@ -91,11 +97,16 @@ export default function EditBinaryPage() {
   const iconURL = `${process.env.REACT_APP_BASE_URL}storage/api/v1/app/binary/${data?.id}/icon`;
 
   return <div className="mx-auto px-10 mb-10" data-color-mode="light">
-    <h1 className={classNames("py-10", "subpixel-antialiased", "font-semibold", "text-5xl")}  >Editing {data?.name}</h1>
+    <h1 className={classNames("pt-10", "subpixel-antialiased", "font-semibold", "text-5xl")}  >Editing {data?.name}</h1>
 
-    <a target={"_blank"} href={iconURL}>
-      <img className="inline-block max-w-[114px] rounded-3xl shadow-md mb-5" src={iconURL} />
-    </a>
+    <Link target={"_blank"} className="inline-block hover:underline text-blue-700" to={`/i/${data?.id}`}>Click here for the public link</Link>
+
+    <div>
+      <a target={"_blank"} href={iconURL}>
+        <img className="inline-block max-w-[114px] rounded-3xl shadow-md my-5" src={iconURL} />
+      </a>
+    </div>
+
     {instanceOfIpa(data) && <AboutIPA binary={data} />}
 
     {/* Description */}
@@ -147,6 +158,7 @@ export default function EditBinaryPage() {
 
     {/* success methods here */}
     {toggleSuccess && <ToggleSuccessfulAlert />}
+    {toggleError && <ToggleUnsuccessfulAlert error={toggleError} />}
 
     <div>
       {/* delete button */}

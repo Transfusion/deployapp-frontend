@@ -1,17 +1,32 @@
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { AxiosResponse } from "axios";
-import classNames from "classnames";
-import { ReactElement, useState } from "react";
-import { BsExclamationCircle, BsSearch } from "react-icons/bs";
-import { Link } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ReactElement, useState, useMemo, useEffect, useRef } from "react";
+import { BsSearch } from "react-icons/bs";
 import { Input, InputGroup, TagPicker, Pagination } from "rsuite";
-import { Table, Column, HeaderCell, Cell, SortType } from 'rsuite-table';
+import { Table, Column, HeaderCell, Cell, SortType, RowDataType } from 'rsuite-table';
 import styled from "styled-components";
-import PagingSortingSpring from "../../api/interfaces/response/paging_sorting_spring";
-import { StorageCredential } from "../../api/interfaces/response/storage_credential";
-import { getStorageCredentials } from "../../api/StorageCredentials";
+
+import MaterialReactTable, { MRT_ColumnDef, MRT_Row, MRT_TableInstance } from 'material-react-table';
+import type {
+  ColumnFiltersState,
+  PaginationState,
+  SortingState,
+} from '@tanstack/react-table';
+
+import { StorageCredential, instanceOfS3Credential } from "../../api/interfaces/response/storage_credential";
+import { getUnwrappedStorageCredentials } from "../../api/StorageCredentials";
 import { useAuth } from "../../contexts/AuthProvider";
 import { STORAGE_TYPES } from "../../utils/constants";
+
+import CollaspedOutlineIcon from '@rsuite/icons/CollaspedOutline';
+import ExpandOutlineIcon from '@rsuite/icons/ExpandOutline';
+import IconButton from 'rsuite/IconButton';
+
+import { InnerCellProps } from 'rsuite-table/lib/Cell';
+import UpdateDeleteS3Row from "./UpdateDeleteS3Row";
+import { AxiosResponse } from "axios";
+import PagingSortingSpring from "../../api/interfaces/response/paging_sorting_spring";
+import _ from "lodash";
+import { humanReadableDate } from "../../utils/utils";
 
 // table utilities start
 
@@ -23,40 +38,81 @@ const CustomCell = styled(Cell).attrs({
   className: 'text-base'
 })``;
 
-const humanReadableDate = (d?: Date): string => {
-  if (!d) return "Never";
-  return new Date(d).toLocaleString();
+const AVAILABLE_TYPES = Object.entries(STORAGE_TYPES).map(([key, value]) => ({ key, label: value }));
+
+/* const renderRowExpanded = (data?: RowDataType) => {
+  if (instanceOfS3Credential(data)) return <UpdateDeleteS3Row
+    s3_credential={data} />
 }
 
-const AVAILABLE_TYPES = Object.entries(STORAGE_TYPES).map(([key, value]) => ({ key, label: value }));
+const ExpandCell = ({ rowData, dataKey, expandedRowKeys, onChange, ...props }: Omit<InnerCellProps, 'onChange'> & { expandedRowKeys: string[], onChange: (rowData: StorageCredential) => void }) => (
+  <Cell {...props} >
+    <IconButton
+      appearance="subtle"
+      onClick={() => {
+        onChange(rowData);
+      }}
+      icon={
+        expandedRowKeys.some(key => key === rowData.id) ? (
+          <CollaspedOutlineIcon />
+        ) : (
+          <ExpandOutlineIcon />
+        )
+      }
+    />
+  </Cell>
+); */
+
 // table utilities end
 
 
 export default function CredentialsTable({
   // getStorageCredentialsUseQuery,
-  noCredsBlurb
+  enableEditing,
+  noCredsBlurb,
+  onCredentialSelected
 }: {
   // getStorageCredentialsUseQuery: UseQueryResult<AxiosResponse<PagingSortingSpring<StorageCredential>>>,
   enableEditing?: Boolean,
   noCredsBlurb?: ReactElement,
 
+  onCredentialSelected?: (id?: string) => any
 }) {
-  const [sortColumn, setSortColumn] = useState<string>();
-  const [sortType, setSortType] = useState<SortType>();
+  // const [sortColumn, setSortColumn] = useState<string>();
+  // const [sortType, setSortType] = useState<SortType>();
 
-  const hasSort = sortType !== undefined && sortColumn !== undefined;
+  // const hasSort = sortType !== undefined && sortColumn !== undefined;
 
-  const [page, setPage] = useState(1);
-  const [size, setSize] = useState(15);
+  // const [page, setPage] = useState(1);
+  // const [size, setSize] = useState(15);
 
-  const handleChangeLimit = (dataKey: number) => {
-    setPage(1);
-    setSize(dataKey);
-  };
+  // const handleChangeLimit = (dataKey: number) => {
+  //   setPage(1);
+  //   setSize(dataKey);
+  // };
 
-  const [types, setTypes] = useState(["S3", "FTP"]);
-  const [_name, set_Name] = useState<string>();
-  const [name, setName] = useState<string>();
+  const [sorting, setSorting] = useState<SortingState>([]);
+  // const hasSort = sorting.length > 0;
+  const apiSorting = sorting.map(({ id, desc }) => ({ key: id, direction: (desc ? 'desc' : 'asc') }));
+
+
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([{ id: "type", value: Object.values(STORAGE_TYPES) }]);
+
+  const nameColFilter = columnFilters.find(({ id }) => id === 'name');
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const { pageIndex: page, pageSize: size } = pagination;
+
+  const types = (columnFilters.find(({ id }) => id === "type")?.value ?? []) as string[];
+
+  // const [types, setTypes] = useState(["S3", "FTP"]);
+  // const [_name, set_Name] = useState<string>();
+  // const [name, setName] = useState<string>();
+  const name = nameColFilter?.value as string | undefined;
 
   const { profile } = useAuth();
 
@@ -69,28 +125,135 @@ export default function CredentialsTable({
     organization,
     authenticated: profile?.authenticated,
 
-    sortColumn,
-    sortType,
-
+    // sortColumn,
+    // sortType,
+    apiSorting,
     types,
     name,
   }];
 
+  // editing and deleting expandable begins here
+  /* const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
+
+  const handleExpanded = (rowData: StorageCredential) => {
+    let open = false;
+    const nextExpandedRowKeys = [] as string[];
+
+    expandedRowKeys.forEach(key => {
+      if (key === rowData.id) {
+        open = true;
+      } else {
+        nextExpandedRowKeys.push(key);
+      }
+    });
+
+    if (!open) {
+      nextExpandedRowKeys.push(rowData.id);
+    }
+    setExpandedRowKeys(nextExpandedRowKeys);
+  }; */
+  // editing and deleting ends here
 
   const { isLoading,
     isError,
     error,
     data,
     isFetching,
-    isPreviousData, } = useQuery(queryKey, () => getStorageCredentials(page - 1, size, (hasSort ? [{ key: sortColumn, direction: sortType }] : undefined), name, types));
+    isPreviousData, } = useQuery(queryKey, () => getUnwrappedStorageCredentials(page, size, apiSorting, name, types));
 
+  const noCreds = !isLoading && data?.empty === true && types.length == AVAILABLE_TYPES.length && name == undefined;
 
-  const noCreds = !isLoading && data?.data.empty === true && types.length == AVAILABLE_TYPES.length && name == undefined;
+  // table hooks begin here
+  const columns = useMemo<MRT_ColumnDef<StorageCredential>[]>(
+    () => [
+      {
+        accessorKey: 'type',
+        header: 'Type',
+        filterSelectOptions: [
+          { text: 'S3', value: 'S3' },
+          { text: 'FTP', value: 'FTP' },
+        ],
+        filterVariant: 'multi-select',
+        enableSorting: false,
+      },
+      {
+        accessorKey: 'name',
+        header: 'Name',
+      },
+      {
+        accessorKey: 'createdOn',
+        header: 'Created On',
+        Cell: ({ cell }) => <span>{humanReadableDate(cell.getValue<Date>())}</span>,
+        enableColumnFilter: false
+      },
+      {
+        accessorKey: 'checkedOn',
+        header: 'Checked On',
+        Cell: ({ cell }) => <span>{humanReadableDate(cell.getValue<Date>())}</span>,
+        enableColumnFilter: false
+      },
+      {
+        accessorKey: 'lastUsed',
+        header: 'Last Used',
+        Cell: ({ cell }) => <span>{humanReadableDate(cell.getValue<Date>())}</span>,
+        enableColumnFilter: false
+      },
+    ],
+    [],
+  );
 
+  // const [freshlyUpdatedRecords, setFreshlyUpdatedRecords] = useState(new Map<string, StorageCredential>());
+  // console.log("freshlyUpdatedRecords", freshlyUpdatedRecords);
+  // useEffect(() => { setFreshlyUpdatedRecords(new Map<string, StorageCredential>()) }, [isLoading, isFetching]);
+  const [rowSelection, setRowSelection] = useState({});
+  useEffect(() => {
+    if (_.isUndefined(onCredentialSelected)) return;
+    if (!_.isEmpty(rowSelection)) onCredentialSelected(_.keys(rowSelection)[0]);
+    else onCredentialSelected(undefined);
+  }, [rowSelection]);
+
+  const tableInstanceRef = useRef<MRT_TableInstance<StorageCredential>>(null);
+  const queryClient = useQueryClient();
+  // table hooks end here
+
+  // ... because hooks cannot be called conditionally
   if (noCreds && noCredsBlurb !== undefined) return noCredsBlurb;
 
+  // table helpers begin here
+  // const _content = data?.content ?? [];
+  const content = data?.content ?? [];
+  const rowCount = data?.totalElements ?? 0;
+
+  // const content = _content.map(cred => freshlyUpdatedRecords.has(cred.id) ? freshlyUpdatedRecords.get(cred.id) : cred) as StorageCredential[];
+
+
+  const renderDetailPanel = ({ row }: { row: MRT_Row<StorageCredential> }) => {
+    if (instanceOfS3Credential(row.original)) return <UpdateDeleteS3Row
+      s3_credential={row.original}
+      onSuccess={(resp) => {
+        const { credential } = resp.data;
+        if (!credential) return; // should never reach this
+        const { id } = credential;
+        // const updatedRecordsClone = new Map(freshlyUpdatedRecords);
+        // updatedRecordsClone.set(id, credential);
+        // setFreshlyUpdatedRecords(updatedRecordsClone);
+        if (data == null) return;
+        const clonedData = { ...data };
+        clonedData.content = clonedData.content.map(cred => cred.id == id ? credential : cred);
+        queryClient.setQueryData<PagingSortingSpring<StorageCredential>>(queryKey, clonedData);
+      }}
+
+      onDeleteSuccess={async (resp) => {
+        tableInstanceRef.current?.toggleAllRowsExpanded(false);
+        queryClient.resetQueries(['storage_creds']);
+      }}
+    />
+    return <>unknown</>
+  }
+  // table helpers end here
+
   return <>
-    <div className="py-5 flex flex-wrap flex-row gap-2 justify-end">
+    {/* <div className="py-5 flex flex-wrap flex-row gap-2 justify-end">
 
       <TagPicker
         className="grow"
@@ -112,72 +275,49 @@ export default function CredentialsTable({
       </div>
 
       <button onClick={() => { setSortColumn(undefined); setSortType(undefined); }} disabled={!hasSort} className="px-4 py-2 font-semibold text-sm bg-blue-700 text-white rounded-md shadow-sm disabled:opacity-75">Reset</button>
-    </div>
+    </div> */}
 
-    <Table
-      loading={isLoading || isFetching}
-      data={data?.data.content}
-      sortColumn={sortColumn}
-      sortType={sortType}
-      height={400}
-      showHeader={true}
-      onRowClick={rowData => {
-        console.log(rowData);
+    <MaterialReactTable
+      columns={columns}
+      data={content}
+      getRowId={({ id }) => id}
+      tableInstanceRef={tableInstanceRef}
+      initialState={{ showColumnFilters: true, density: 'compact' }}
+      enableGlobalFilter={false}
+      manualFiltering
+      manualPagination
+      manualSorting
+      muiTableContainerProps={{ sx: { maxHeight: '750px' } }}
+      muiToolbarAlertBannerProps={
+        isError
+          ? {
+            color: 'error',
+            children: 'Error loading data',
+          }
+          : undefined
+      }
+      onColumnFiltersChange={setColumnFilters}
+      // onGlobalFilterChange={setGlobalFilter}
+      onPaginationChange={setPagination}
+      onSortingChange={setSorting}
+      rowCount={rowCount}
+
+      renderDetailPanel={enableEditing && renderDetailPanel}
+
+      enableRowSelection={onCredentialSelected !== undefined}
+      enableSelectAll={false}
+      onRowSelectionChange={(foo: any) => setRowSelection(foo())}
+
+      state={{
+        rowSelection,
+        columnFilters,
+        // globalFilter,
+        isLoading,
+        pagination,
+        showAlertBanner: isError,
+        showProgressBars: isFetching,
+        sorting,
       }}
-
-      onSortColumn={(sortColumn, sortType) => {
-        console.log(sortColumn, sortType);
-        setSortColumn(sortColumn);
-        setSortType(sortType);
-      }}>
-
-      <Column width={80} align="center">
-        <CustomHeaderCell className="text-sm">Type</CustomHeaderCell>
-        <CustomCell dataKey="type" />
-      </Column>
-
-      <Column sortable width={150}>
-        <CustomHeaderCell>Name</CustomHeaderCell>
-        <CustomCell dataKey="name" />
-      </Column>
-
-      <Column sortable width={200} resizable>
-        <CustomHeaderCell>Created On</CustomHeaderCell>
-        <CustomCell dataKey="createdOn">{rowData => humanReadableDate(rowData.createdOn)}</CustomCell>
-      </Column>
-
-      <Column sortable width={200} resizable>
-        <CustomHeaderCell>Checked On</CustomHeaderCell>
-        <CustomCell dataKey="checkedOn">{rowData => humanReadableDate(rowData.checkedOn)}</CustomCell>
-      </Column>
-
-      <Column sortable width={200} resizable>
-        <CustomHeaderCell>Last Used</CustomHeaderCell>
-        <CustomCell dataKey="lastUsed">{rowData => humanReadableDate(rowData.lastUsed)}</CustomCell>
-      </Column>
-
-    </Table>
-
-
-    <div className="p-4">
-      <Pagination
-        prev
-        next
-        first
-        last
-        ellipsis
-        boundaryLinks
-        maxButtons={5}
-        size="xs"
-        layout={['total', '-', 'limit', '|', 'pager', 'skip']}
-        // total number of rows
-        total={data?.data.totalElements || 0}
-        limitOptions={[5, 10, 15, 20]}
-        limit={size}
-        activePage={page}
-        onChangePage={setPage}
-        onChangeLimit={handleChangeLimit}
-      />
-    </div>
+    />
   </>
 }

@@ -59,12 +59,16 @@ export default function Navbar() {
         <NonDropdownSpan>Manage Storage</NonDropdownSpan>
       </NavLink>
 
+      <NavLink to="/binaries" >
+        <NonDropdownSpan>App Binaries</NonDropdownSpan>
+      </NavLink>
+
       {profile?.authenticated && <NavLink to="/profile" >
         <NonDropdownSpan>Profile</NonDropdownSpan>
       </NavLink>}
 
       {profile?.authenticated ?
-        <NonDropdownSpan onClick={logout}>Logout</NonDropdownSpan> :
+        <NonDropdownSpan onClick={() => { logout() }}>Logout</NonDropdownSpan> :
         <NavLink to="/login" >
           <NonDropdownSpan>Login</NonDropdownSpan>
         </NavLink>}
@@ -105,6 +109,10 @@ export default function Navbar() {
         <NonDropdownSpan>Manage Storage</NonDropdownSpan>
       </NavLink>
 
+      <NavLink to="/binaries" >
+        <NonDropdownSpan>App Binaries</NonDropdownSpan>
+      </NavLink>
+
       {profile?.authenticated && <NavLink to="/profile" >
         <NonDropdownSpan>Profile</NonDropdownSpan>
       </NavLink>}
@@ -114,7 +122,7 @@ export default function Navbar() {
       </NavLink>}
 
       {profile?.authenticated ?
-        <NonDropdownSpan onClick={logout}>Logout</NonDropdownSpan> :
+        <NonDropdownSpan onClick={() => { logout() }}>Logout</NonDropdownSpan> :
         <NavLink to="/login" >
           <NonDropdownSpan>Login</NonDropdownSpan>
         </NavLink>}

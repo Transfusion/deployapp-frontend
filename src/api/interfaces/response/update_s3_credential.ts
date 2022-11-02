@@ -12,5 +12,6 @@ export function instanceOfUpdateS3CredentialResponse(object?: any): object is Up
     'testPublicAccessSuccess' in object &&
     'testPublicAccessError' in object &&
     'testSignedLinkSuccess' in object &&
-    'testSignedLinkError' in object;
+    'testSignedLinkError' in object &&
+    'credential' in object;
 }

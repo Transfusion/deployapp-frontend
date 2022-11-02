@@ -8,8 +8,10 @@ import logo from './logo.svg';
 
 import Login from '../src/pages/Login';
 import Home from './pages/Home';
-import { userInfo } from 'os';
 import ManageStorage from './pages/ManageStorage';
+import Binaries from './pages/Binaries';
+import ManageBinaryPage from './pages/ManageBinaryPage';
+import PublicBinaryPage from './pages/PublicBinaryPage';
 
 
 // const Home = () => (
@@ -50,6 +52,9 @@ function App() {
             <Route path="/profile" element={<Login />} />
             <Route path="/login" element={<Login />} />
             <Route path="/storage" element={<ManageStorage />} />
+            <Route path="/binaries" element={<Binaries />} />
+            <Route path="/manage/:binaryId" element={<ManageBinaryPage />} />
+            <Route path="/i/:binaryId" element={<PublicBinaryPage />} />
           </Routes>
         </AuthProvider>
       </Router>

@@ -31,7 +31,7 @@ export default function ManageStorage() {
   const queryClient = useQueryClient();
 
   // updating
-  const { isSuccess: mutationSuccess, error: mutationError, mutate: addNewS3Credential } = useMutation<AxiosResponse<CreateS3CredentialResponse, any>, AxiosError, CreateS3CredentialRequest>((req: CreateS3CredentialRequest) => {
+  const { isLoading: mutationLoading, isSuccess: mutationSuccess, error: mutationError, mutate: addNewS3Credential } = useMutation<AxiosResponse<CreateS3CredentialResponse, any>, AxiosError, CreateS3CredentialRequest>((req: CreateS3CredentialRequest) => {
     return createS3Credential(req);
   }, {
     // req is the return type of the previous function 
@@ -104,7 +104,7 @@ export default function ManageStorage() {
       {mutationSuccess && <CreateSuccessfulAlert />}
 
       <div className={classNames('pb-5', 'flex', 'flex-row', 'justify-end')}>
-        <button type="submit" className={classNames('text-base', 'text-blue-700', 'hover:text-white', 'border-2', 'border-blue-700', 'hover:bg-blue-800', 'focus:ring-4', 'focus:outline-none', 'focus:ring-blue-300', 'font-medium', 'text-sm', 'p-2', 'text-center', 'mt-2',
+        <button disabled={mutationLoading} className={classNames('text-base', 'text-blue-700', 'hover:text-white', 'border-2', 'border-blue-700', 'hover:bg-blue-800', 'focus:ring-4', 'focus:outline-none', 'focus:ring-blue-300', 'font-medium', 'text-sm', 'p-2', 'text-center', 'mt-2',
           // 'mr-2', 'mb-2',
           // 'dark:border-blue-500', 'dark:hover:text-white', 'dark:hover:bg-blue-600', 'dark:focus:ring-blue-800'
 
@@ -112,6 +112,6 @@ export default function ManageStorage() {
       </div>
 
     </form>}
-    <CredentialsTable />
+    <CredentialsTable enableEditing/>
   </div>
 }

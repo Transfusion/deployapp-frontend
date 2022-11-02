@@ -5,11 +5,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* tailwind doesn't style lists by default */
+@layer base {
+
+  ul,
+  ol {
+    list-style: revert;
+  }
+}
 
 html,
 body,
 #root,
-#root>div {
+#root>div:not('#Toastify') {
   min-height: 100vh;
   /* prevent macos swipe to navigate backwards */
   overscroll-behavior-x: none;
@@ -41,4 +49,29 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* https://stackoverflow.com/questions/13014808/is-there-any-way-to-animate-an-ellipsis-with-css-animations */
+.loading:after {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: bottom;
+  -webkit-animation: ellipsis steps(4, end) 900ms infinite;
+  animation: ellipsis steps(4, end) 900ms infinite;
+  content: "\2026";
+  /* ascii code for the ellipsis character */
+  width: 0px;
+  margin-left: 10px;
+}
+
+@keyframes ellipsis {
+  to {
+    width: 40px;
+  }
+}
+
+@-webkit-keyframes ellipsis {
+  to {
+    width: 40px;
+  }
 }

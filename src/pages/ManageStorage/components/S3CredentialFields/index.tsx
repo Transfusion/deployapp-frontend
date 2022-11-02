@@ -22,14 +22,14 @@ export default function S3CredentialFields({ control, register, getValues, error
     isFetching,
     isPreviousData, } = useQuery([true], () => getS3Regions());
 
-  const custom_item = [{ "isGlobalRegion": false, "id": "custom", "description": "Custom endpoint (e.g. Minio, GCP)" }] as S3RegionsResponse;
+  const custom_item = [{ "isGlobalRegion": false, "id": "custom", "description": "Custom endpoint (e.g. Minio)" }] as S3RegionsResponse;
 
   const S3_REGIONS = custom_item.concat(data?.data as S3RegionsResponse || [] as S3RegionsResponse);
 
   const awsRegion = useWatch({
     control,
     name: "awsRegion", // without supply name will watch the entire form, or ['firstName', 'lastName'] to watch both
-    defaultValue: "default" // default value before the render
+    defaultValue: getValues("awsRegion") // default value before the render
   });
 
   return <>
@@ -124,7 +124,7 @@ export default function S3CredentialFields({ control, register, getValues, error
     <div>
       <label className="inline-flex items-center">
         <input {...register('skipTestPublicAccess')} className="form-checkbox w-7 h-7 mr-2 focus:ring-indigo-400 focus:ring-opacity-25 border border-gray-300 rounded" type="checkbox" />
-        <p className="text-base font-semibold">Skip testing public prefix</p>  
+        <p className="text-base font-semibold">Skip testing public prefix</p>
       </label>
 
       <p className="text-slate-600">Please ensure that the <span className="font-mono">public/</span> prefix of your bucket is publicly accessible.</p>

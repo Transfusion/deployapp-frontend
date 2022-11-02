@@ -7,4 +7,4 @@ RUN npm ci \
     && ls -l
 
 FROM nginx:1.23.2-alpine as final
-COPY --from=build /app/build/ /var/www/html
+COPY --from=build /app/build/ /usr/share/nginx/html

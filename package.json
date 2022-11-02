@@ -37,10 +37,11 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "postinstall": "post_install.sh",
+    "postinstall": "sh post_install.sh",
     "start": "react-scripts start",
     "start:dev": "env-cmd -f ./environments/.dev.env react-scripts start",
     "build": "react-scripts build",
+    "build:prod": "env-cmd -f ./environments/.prod.env react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

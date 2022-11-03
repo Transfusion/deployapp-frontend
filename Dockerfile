@@ -8,3 +8,4 @@ RUN npm ci \
 
 FROM nginx:1.23.2-alpine as final
 COPY --from=build /app/build/ /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf

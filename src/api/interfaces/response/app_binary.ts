@@ -32,7 +32,7 @@ export interface Ipa extends AppBinary {
   ipad: boolean,
   universal: boolean,
   deviceType?: string,
-  archs: string[],
+  archs?: string[],
   displayName?: string,
   releaseType?: string,
   buildType?: string,

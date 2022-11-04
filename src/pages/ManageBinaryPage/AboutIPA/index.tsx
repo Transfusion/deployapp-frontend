@@ -34,7 +34,7 @@ export default function AboutIPA({ binary }: {
 
       <InfoCell title={"Device Type"} value={binary.deviceType ?? "N/A"} />
 
-      <InfoCell title={"Archs."} value={binary.archs.join(" ") ?? "N/A"} />
+      <InfoCell title={"Archs."} value={binary.archs?.join(" ") ?? "N/A"} />
 
       <InfoCell title={"Display Name"} value={binary.displayName ?? 'N/A'} />
 

@@ -2,16 +2,38 @@ import { useDropzone } from "react-dropzone";
 import AppDropzone from "../AppDropzone";
 import DropzoneCredentialsPicker from "../DropzoneCredentialsPicker";
 
-import { BsExclamationCircle } from "react-icons/bs";
+import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import classNames from "classnames";
-import { useState } from "react";
 import _ from "lodash";
+import { useState } from "react";
+import { BsExclamationCircle } from "react-icons/bs";
+import { uploadAppBinaryUnwrapped } from "../../api/AppBinaryUpload";
+import { UploadAppBinaryRequest } from "../../api/interfaces/request/upload_appbinary";
+import { AppBinary } from "../../api/interfaces/response/app_binary";
+import { StorageCredential } from "../../api/interfaces/response/storage_credential";
+import UploadUnsuccessfulAlert from "./components/UploadUnsuccessfulAlert";
+import UploadSuccessfulAlert from "./components/UploadSuccessfulAlert";
+
+interface UploadMutationReq {
+  data: UploadAppBinaryRequest,
+  onUploadProgress?: (progressEvent: ProgressEvent) => void
+}
 
 export default function HomeUpload() {
-  const [credId, setCredId] = useState<string | undefined>(undefined);
+  // const [credId, setCredId] = useState<string | undefined>(undefined);
+  const [storageCred, setStorageCred] = useState<StorageCredential | undefined>(undefined);
+
+  const { data, isLoading, isSuccess, error, mutate } = useMutation<AppBinary, AxiosError, UploadMutationReq>((req: UploadMutationReq) => {
+    const { data, onUploadProgress } = req;
+    return uploadAppBinaryUnwrapped(data, onUploadProgress);
+  }, {
+    // this object is a MutateOptions
+    // onSuccess: onDeleteSuccess
+  });
 
   const dropState = useDropzone({
-    // disabled: true,
+    disabled: isLoading,
     accept: {
       '': ['.ipa', '.apk'],
     },
@@ -25,11 +47,30 @@ export default function HomeUpload() {
   });
 
   const { acceptedFiles, fileRejections } = dropState;
+  const acceptedFile = _.head(acceptedFiles);
+  const { name, size, type } = acceptedFile || {};
 
   console.log("from homeupload", acceptedFiles);
 
+  const [uploadProgressEvt, setUploadProgressEvt] = useState<ProgressEvent<EventTarget>>();
+  const UPE = uploadProgressEvt;
+
+  const performUpload = () => {
+    console.log(acceptedFiles);
+    const file = acceptedFile;
+    if (_.isUndefined(storageCred) || _.isUndefined(file)) return;
+    mutate({
+      data: {
+        storageCredentialId: storageCred.id,
+        binary: file,
+        credentialCreatedOn: storageCred.createdOn
+      },
+      onUploadProgress: evt => { console.log(evt); setUploadProgressEvt(evt); }
+    });
+  }
+
   return <>
-    <DropzoneCredentialsPicker onCredentialSelected={setCredId} />
+    <DropzoneCredentialsPicker onCredentialSelected={setStorageCred} />
     <AppDropzone dropState={dropState} />
 
     {fileRejections.map(({ file, errors }) => {
@@ -39,7 +80,18 @@ export default function HomeUpload() {
       </div>
     })}
 
-    <button disabled={!acceptedFiles.length || _.isUndefined(credId)}
+    {isLoading && <div className="bg-blue-100 py-5 px-6 mb-3 text-base text-blue-700 inline-flex items-center w-full" role="alert">
+      <BsExclamationCircle size={'1.5em'} style={{ marginRight: "15px" }} />
+      <div className="h-fit">
+        <p>Uploading <span className='font-semibold'>{name} </span> {UPE !== undefined && (UPE.loaded / UPE.total * 100).toFixed(2)}%</p>
+      </div>
+    </div>}
+
+    {error && <UploadUnsuccessfulAlert error={error} />}
+    {isSuccess && <UploadSuccessfulAlert id={data.id} />}
+
+    <button disabled={!acceptedFiles.length || _.isUndefined(storageCred) || isLoading}
+      onClick={performUpload}
       className={classNames('text-base', 'hover:text-white', 'border-2',
 
         'text-blue-700', 'border-blue-700', 'hover:bg-blue-800', 'enabled:focus:ring-blue-300',

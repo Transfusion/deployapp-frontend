@@ -7,8 +7,8 @@ export interface StorageCredential {
   id: string;
   type: StorageCredType;
   name?: string;
-  createdOn?: Date;
-  checkedOn?: Date;
+  createdOn: Date;
+  checkedOn: Date;
   lastUsed?: Date;
 }
 

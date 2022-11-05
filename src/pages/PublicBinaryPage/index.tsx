@@ -84,6 +84,15 @@ export default function PublicBinaryPage() {
 
   const iconURL = `${process.env.REACT_APP_BASE_URL}storage/api/v1/app/binary/${data?.id}/icon`;
 
+  const itmsPlistURL = `itms-services:///?action=download-manifest&url=${process.env.REACT_APP_BASE_URL}storage/api/v1/app/binary/${data?.id}/itmsplist`;
+
+  let downloadURL = 'https://example.com';
+  if (data.type === 'IPA') {
+    downloadURL = itmsPlistURL;
+  } else {
+    // not implemented yet
+  }
+
   return <div className="mx-auto px-10 mb-10" data-color-mode="light">
     <h1 className={classNames("pt-10", "subpixel-antialiased", "font-semibold", "text-5xl")}  >{data?.name}</h1>
 
@@ -121,13 +130,14 @@ export default function PublicBinaryPage() {
       <div contentEditable spellCheck={false}>{`Ver. ${data?.version} Build ${data?.build}`}</div>
     </div>}
 
-    <button aria-label="tap here to install" type="button" className="bg-gradient-to-r from-teal-400 to-blue-500 hover:from-teal-500 hover:to-blue-600 text-3xl text-white font-semibold px-6 py-3 my-5 rounded-full w-full md:w-auto">
+    <a aria-label="tap here to install" target="_blank" href={downloadURL} type="button" className="bg-gradient-to-r from-teal-400 to-blue-500 hover:from-teal-500 hover:to-blue-600 text-3xl text-white font-semibold px-6 py-3 my-5 rounded-full w-full md:w-auto inline-block text-center">
       Install
-    </button>
+    </a>
 
     <h3 className="font-semibold text-4xl my-5">About this release</h3>
+    {!data.description && <p className="text-gray-500">No description available.</p>}
     <div className="container" data-color-mode="light">
-      <MDEditor.Markdown className="shadow-inner" source={data.description} />
+      <MDEditor.Markdown source={data.description} />
     </div>
 
   </div>

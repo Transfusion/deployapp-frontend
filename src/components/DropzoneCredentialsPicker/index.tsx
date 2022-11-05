@@ -7,7 +7,7 @@ import CredentialsTable from "../CredentialsTable";
 // for the home page
 // const size = 15;
 export default function DropzoneCredentialsPicker({ onCredentialSelected }: {
-  onCredentialSelected?: (id?: string) => any
+  onCredentialSelected?: (cred?: StorageCredential) => any
 }) {
 
   const noCredsBlurb =

@@ -76,7 +76,7 @@ export default function CredentialsTable({
   enableEditing?: Boolean,
   noCredsBlurb?: ReactElement,
 
-  onCredentialSelected?: (id?: string) => any
+  onCredentialSelected?: (cred?: StorageCredential) => any
 }) {
   // const [sortColumn, setSortColumn] = useState<string>();
   // const [sortType, setSortType] = useState<SortType>();
@@ -208,7 +208,12 @@ export default function CredentialsTable({
   const [rowSelection, setRowSelection] = useState({});
   useEffect(() => {
     if (_.isUndefined(onCredentialSelected)) return;
-    if (!_.isEmpty(rowSelection)) onCredentialSelected(_.keys(rowSelection)[0]);
+    if (!_.isEmpty(rowSelection)) {
+      const id = _.keys(rowSelection)[0];
+      const cred = content.find(cred => cred.id === id);
+      onCredentialSelected(cred);
+      // onCredentialSelected(_.keys(rowSelection)[0]);
+    }
     else onCredentialSelected(undefined);
   }, [rowSelection]);
 

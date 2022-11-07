@@ -1,32 +1,26 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ReactElement, useState, useMemo, useEffect, useRef } from "react";
-import { BsSearch } from "react-icons/bs";
-import { Input, InputGroup, TagPicker, Pagination } from "rsuite";
-import { Table, Column, HeaderCell, Cell, SortType, RowDataType } from 'rsuite-table';
+import { ReactElement, useEffect, useMemo, useRef, useState } from "react";
+import { Cell, HeaderCell } from 'rsuite-table';
 import styled from "styled-components";
 
-import MaterialReactTable, { MRT_ColumnDef, MRT_Row, MRT_TableInstance } from 'material-react-table';
 import type {
   ColumnFiltersState,
   PaginationState,
-  SortingState,
+  SortingState
 } from '@tanstack/react-table';
+import MaterialReactTable, { MRT_ColumnDef, MRT_Row, MRT_TableInstance } from 'material-react-table';
 
-import { StorageCredential, instanceOfS3Credential } from "../../api/interfaces/response/storage_credential";
+import { instanceOfS3Credential, StorageCredential } from "../../api/interfaces/response/storage_credential";
 import { getUnwrappedStorageCredentials } from "../../api/StorageCredentials";
 import { useAuth } from "../../contexts/AuthProvider";
 import { STORAGE_TYPES } from "../../utils/constants";
 
-import CollaspedOutlineIcon from '@rsuite/icons/CollaspedOutline';
-import ExpandOutlineIcon from '@rsuite/icons/ExpandOutline';
-import IconButton from 'rsuite/IconButton';
 
-import { InnerCellProps } from 'rsuite-table/lib/Cell';
-import UpdateDeleteS3Row from "./UpdateDeleteS3Row";
-import { AxiosResponse } from "axios";
-import PagingSortingSpring from "../../api/interfaces/response/paging_sorting_spring";
 import _ from "lodash";
+import { MRT_Localization_EN } from 'material-react-table/locales/en';
+import PagingSortingSpring from "../../api/interfaces/response/paging_sorting_spring";
 import { humanReadableDate } from "../../utils/utils";
+import UpdateDeleteS3Row from "./UpdateDeleteS3Row";
 
 // table utilities start
 
@@ -177,6 +171,11 @@ export default function CredentialsTable({
         enableSorting: false,
       },
       {
+        accessorKey: 'id',
+        header: 'ID',
+        size: 300,
+      },
+      {
         accessorKey: 'name',
         header: 'Name',
       },
@@ -287,7 +286,10 @@ export default function CredentialsTable({
       data={content}
       getRowId={({ id }) => id}
       tableInstanceRef={tableInstanceRef}
-      initialState={{ showColumnFilters: true, density: 'compact' }}
+      initialState={{
+        showColumnFilters: true, density: 'compact',
+        columnVisibility: { id: false }
+      }}
       enableGlobalFilter={false}
       manualFiltering
       manualPagination
@@ -323,6 +325,8 @@ export default function CredentialsTable({
         showProgressBars: isFetching,
         sorting,
       }}
+
+      localization={MRT_Localization_EN}
     />
   </>
 }

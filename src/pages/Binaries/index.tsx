@@ -1,9 +1,10 @@
-import { AccountCircle, Send } from "@mui/icons-material";
+import { Send } from "@mui/icons-material";
 import EditIcon from '@mui/icons-material/Edit';
-import { MenuItem, ListItemIcon } from "@mui/material";
+import { ListItemIcon, MenuItem } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { ColumnFiltersState, PaginationState, SortingState } from "@tanstack/react-table";
 import MaterialReactTable, { MRT_ColumnDef, MRT_TableInstance } from "material-react-table";
+import { MRT_Localization_EN } from 'material-react-table/locales/en';
 import { useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUnwrappedBinaries } from "../../api/AppBinary";
@@ -78,6 +79,11 @@ export default function Binaries() {
         enableSorting: false,
       },
       {
+        accessorKey: 'id',
+        header: 'ID',
+        size: 300,
+      },
+      {
         accessorKey: 'name',
         header: 'Name',
         size: 150,
@@ -120,7 +126,10 @@ export default function Binaries() {
       data={content}
       getRowId={({ id }) => id}
       tableInstanceRef={tableInstanceRef}
-      initialState={{ showColumnFilters: true, density: 'compact' }}
+      initialState={{
+        showColumnFilters: true, density: 'compact',
+        columnVisibility: { id: false }
+      }}
       enableGlobalFilter={false}
       manualFiltering
       manualPagination
@@ -187,6 +196,8 @@ export default function Binaries() {
         showProgressBars: isFetching,
         sorting,
       }}
+
+      localization={MRT_Localization_EN}
     />
 
   </div>

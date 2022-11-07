@@ -161,10 +161,11 @@ export default function Binaries() {
           </ListItemIcon>
           Manage
         </MenuItem>,
-        <MenuItem
+        (row.original.available && <MenuItem
           key={1}
           onClick={() => {
             // Send email logic...
+            navigate(`/i/${row.id}`);
             closeMenu();
           }}
           sx={{ m: 0 }}
@@ -172,8 +173,8 @@ export default function Binaries() {
           <ListItemIcon>
             <Send />
           </ListItemIcon>
-          Download page
-        </MenuItem>,
+          Public page
+        </MenuItem>),
       ]}
 
       state={{

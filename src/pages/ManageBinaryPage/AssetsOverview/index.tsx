@@ -35,10 +35,10 @@ export default function AssetsOverview({ binary }: {
         <InfoCell title={"ID"} value={id} />
         <InfoCell title={"Type"} value={type} />
         <InfoCell title={"Status"} value={status ?? 'N/A'} />
-        <InfoCell title={"Filename"} value={fileName} />
+        <InfoCell title={"Filename"} value={fileName ?? 'N/A'} />
         <InfoCell title={"Desc."} value={description ?? 'N/A'} />
 
-        <div className={classNames("flex", "flex-row", "justify-end", "basis-full")}>
+        {fileName !== undefined && status !== 'FAILED' && <div className={classNames("flex", "flex-row", "justify-end", "basis-full")}>
 
 
           <a href={`${process.env.REACT_APP_BASE_URL}/storage/api/v1/app/assets/${id}/getAuthorized`}
@@ -51,7 +51,7 @@ export default function AssetsOverview({ binary }: {
           </a>
 
 
-        </div>
+        </div>}
       </div>
     )}
   </>

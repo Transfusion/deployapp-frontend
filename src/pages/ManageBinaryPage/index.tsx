@@ -2,13 +2,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import classNames from "classnames";
 import { BsArrowRepeat, BsFillTrashFill } from "react-icons/bs";
-import { Link, useParams } from "react-router-dom";
-import { getUnwrappedBinary, getUnwrappedJobs, updateAppBinaryAvailable } from "../../api/AppBinary";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { deleteBinary, getUnwrappedBinary, getUnwrappedJobs, updateAppBinaryAvailable } from "../../api/AppBinary";
 import { AppBinary, instanceOfIpa } from "../../api/interfaces/response/app_binary";
 import { AppBinaryJob } from "../../api/interfaces/response/app_binary_job";
 import { useAuth } from "../../contexts/AuthProvider";
 import AboutIPA from "./AboutIPA";
 import AssetsOverview from "./AssetsOverview";
+import DeleteUnsuccessfulAlert from "./components/DeleteUnsuccessfulAlert";
 import ToggleSuccessfulAlert from "./components/ToggleSuccessfulAlert";
 import ToggleUnsuccessfulAlert from "./components/ToggleUnsuccessfulAlert";
 import EditDescription from "./EditDescription";
@@ -72,6 +73,15 @@ export default function EditBinaryPage() {
    * > 'foo'
    */
   const toggleError = toggleAvailableError;
+
+  const navigate = useNavigate();
+  /* delete mutation */
+  const { isLoading: deleteLoading, isSuccess: deleteSuccess, error: deleteError, mutate: deleteAppBinary } = useMutation<AxiosResponse<void, any>, AxiosError, string>((id: string) => {
+    return deleteBinary(id);
+  }, {
+    // this object is a MutateOptions
+    onSuccess: async () => { navigate('/binaries'); }
+  });
 
 
   if (isError) return <div className="min-h-full flex justify-center items-center">
@@ -163,9 +173,9 @@ export default function EditBinaryPage() {
     <div>
       {/* delete button */}
       <button
-        // disabled={disableOperations}
+        disabled={deleteLoading}
         onClick={() => {
-          // deleteExistingStorageCredential(s3_credential.id) 
+          deleteAppBinary(binaryId!!)
         }}
         className={classNames('text-base', 'text-red-700', 'hover:text-white', 'border-2', 'border-red-700', 'hover:bg-red-800', 'focus:ring-4', 'focus:outline-none', 'focus:ring-red-300', 'font-medium', 'text-sm', 'p-2', 'text-center', 'mt-2',
           // 'mr-2', 'mb-2',
@@ -176,6 +186,9 @@ export default function EditBinaryPage() {
         Delete {data?.name} PERMANENTLY
       </button>
     </div>
+
+
+    {deleteError && <DeleteUnsuccessfulAlert error={deleteError} />}
 
   </div>
 }

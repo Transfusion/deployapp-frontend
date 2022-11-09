@@ -174,6 +174,7 @@ export default function CredentialsTable({
         accessorKey: 'id',
         header: 'ID',
         size: 300,
+        enableColumnFilter: false,
       },
       {
         accessorKey: 'name',

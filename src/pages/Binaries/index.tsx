@@ -6,7 +6,7 @@ import { ColumnFiltersState, PaginationState, SortingState } from "@tanstack/rea
 import MaterialReactTable, { MRT_ColumnDef, MRT_TableInstance } from "material-react-table";
 import { MRT_Localization_EN } from 'material-react-table/locales/en';
 import { useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getUnwrappedBinaries } from "../../api/AppBinary";
 import { AppBinary } from "../../api/interfaces/response/app_binary";
 import { useAuth } from "../../contexts/AuthProvider";
@@ -82,6 +82,7 @@ export default function Binaries() {
         accessorKey: 'id',
         header: 'ID',
         size: 300,
+        enableColumnFilter: false,
       },
       {
         accessorKey: 'name',
@@ -156,34 +157,29 @@ export default function Binaries() {
       // onRowSelectionChange={(foo: any) => setRowSelection(foo())}
 
       renderRowActionMenuItems={({ closeMenu, row }) => [
-        <MenuItem
-          key={0}
-          onClick={() => {
-            // View profile logic...
-            navigate(`/manage/${row.id}`);
-            closeMenu();
-          }}
-          sx={{ m: 0 }}
-        >
-          <ListItemIcon>
-            <EditIcon />
-          </ListItemIcon>
-          Manage
-        </MenuItem>,
-        (row.original.available && <MenuItem
-          key={1}
-          onClick={() => {
-            // Send email logic...
-            navigate(`/i/${row.id}`);
-            closeMenu();
-          }}
-          sx={{ m: 0 }}
-        >
-          <ListItemIcon>
-            <Send />
-          </ListItemIcon>
-          Public page
-        </MenuItem>),
+        <Link target={"_blank"} to={`/manage/${row.id}`}>
+          <MenuItem
+            key={0}
+            sx={{ m: 0 }}
+          >
+            <ListItemIcon>
+              <EditIcon />
+            </ListItemIcon>
+            Manage
+          </MenuItem>
+        </Link>,
+        (row.original.available &&
+          <Link target={"_blank"} to={`/i/${row.id}`}>
+            <MenuItem
+              key={1}
+              sx={{ m: 0 }}
+            >
+              <ListItemIcon>
+                <Send />
+              </ListItemIcon>
+              Public page
+            </MenuItem>
+          </Link>),
       ]}
 
       state={{

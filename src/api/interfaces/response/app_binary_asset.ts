@@ -8,7 +8,7 @@ export interface AppBinaryAsset {
   appBinaryId: string,
   type: string,
   status?: string,
-  fileName: string,
+  fileName?: string,
   description?: string,
   value?: Json
 }

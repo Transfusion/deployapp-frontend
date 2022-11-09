@@ -49,6 +49,10 @@ export function getBinary(id: string) {
   return axiosClient.get<AppBinary>(`/storage/api/v1/app/binary/${id}`);
 }
 
+export function deleteBinary(id: string) {
+  return axiosClient.delete<void>(`/storage/api/v1/app/binary/${id}`);
+}
+
 export function getUnwrappedBinary(id: string) {
   return getBinary(id).then(resp => resp.data);
 }

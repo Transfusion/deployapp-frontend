@@ -1,10 +1,14 @@
 import axiosClient from "./client"
+import { CreateFtpCredentialRequest } from "./interfaces/request/create_ftp_credential"
 import { CreateS3CredentialRequest } from "./interfaces/request/create_s3_credential"
+import { UpdateFtpCredentialRequest } from "./interfaces/request/update_ftp_credential"
 import { UpdateS3CredentialRequest } from "./interfaces/request/update_s3_credential"
+import { CreateFtpCredentialResponse } from "./interfaces/response/create_ftp_credential"
 import { CreateS3CredentialResponse } from "./interfaces/response/create_s3_credential"
 import PagingSortingSpring from "./interfaces/response/paging_sorting_spring"
 import S3RegionsResponse from "./interfaces/response/s3_regions_response"
 import { StorageCredential } from "./interfaces/response/storage_credential"
+import { UpdateFtpCredentialResponse } from "./interfaces/response/update_ftp_credential"
 import { UpdateS3CredentialResponse } from "./interfaces/response/update_s3_credential"
 
 export function getS3Regions() {
@@ -107,7 +111,7 @@ export function getUnwrappedStorageCredentials(page: Number, size = 15, sort?: {
     return getStorageCredentials(page, size, sort, name, types).then(resp => resp.data);
 }
 
-export function deleteStorageCredential(id: string) {
+export function deleteS3Credential(id: string) {
     return axiosClient.delete<void>(`/api/v1/credentials/S3/${id}`);
 }
 
@@ -118,4 +122,16 @@ export function createS3Credential(data: CreateS3CredentialRequest) {
 
 export function updateS3Credential(id: string, data: UpdateS3CredentialRequest) {
     return axiosClient.put<UpdateS3CredentialResponse>(`/api/v1/credentials/S3/${id}`, data);
+}
+
+export function deleteFtpCredential(id: string) {
+    return axiosClient.delete<void>(`/api/v1/credentials/FTP/${id}`);
+}
+
+export function createFtpCredential(data: CreateFtpCredentialRequest) {
+    return axiosClient.post<CreateFtpCredentialResponse>("/api/v1/credentials/FTP", data);
+}
+
+export function updateFtpCredential(id: string, data: UpdateFtpCredentialRequest) {
+    return axiosClient.put<UpdateFtpCredentialResponse>(`/api/v1/credentials/FTP/${id}`, data);
 }

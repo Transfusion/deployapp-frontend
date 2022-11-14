@@ -10,7 +10,7 @@ import type {
 } from '@tanstack/react-table';
 import MaterialReactTable, { MRT_ColumnDef, MRT_Row, MRT_TableInstance } from 'material-react-table';
 
-import { instanceOfS3Credential, StorageCredential } from "../../api/interfaces/response/storage_credential";
+import { instanceOfFtpCredential, instanceOfS3Credential, StorageCredential } from "../../api/interfaces/response/storage_credential";
 import { getUnwrappedStorageCredentials } from "../../api/StorageCredentials";
 import { useAuth } from "../../contexts/AuthProvider";
 import { STORAGE_TYPES } from "../../utils/constants";
@@ -21,6 +21,7 @@ import { MRT_Localization_EN } from 'material-react-table/locales/en';
 import PagingSortingSpring from "../../api/interfaces/response/paging_sorting_spring";
 import { humanReadableDate } from "../../utils/utils";
 import UpdateDeleteS3Row from "./UpdateDeleteS3Row";
+import UpdateDeleteFtpRow from "./UpdateDeleteFtpRow";
 
 // table utilities start
 
@@ -253,6 +254,27 @@ export default function CredentialsTable({
         queryClient.resetQueries(['storage_creds']);
       }}
     />
+
+    else if (instanceOfFtpCredential(row.original)) return <UpdateDeleteFtpRow
+      ftp_credential={row.original}
+      onSuccess={(resp) => {
+        const { credential } = resp.data;
+        if (!credential) return; // should never reach this
+        const { id } = credential;
+        // const updatedRecordsClone = new Map(freshlyUpdatedRecords);
+        // updatedRecordsClone.set(id, credential);
+        // setFreshlyUpdatedRecords(updatedRecordsClone);
+        if (data == null) return;
+        const clonedData = { ...data };
+        clonedData.content = clonedData.content.map(cred => cred.id == id ? credential : cred);
+        queryClient.setQueryData<PagingSortingSpring<StorageCredential>>(queryKey, clonedData);
+      }}
+      onDeleteSuccess={async (resp) => {
+        tableInstanceRef.current?.toggleAllRowsExpanded(false);
+        queryClient.resetQueries(['storage_creds']);
+      }}
+    />
+
     return <>unknown</>
   }
   // table helpers end here

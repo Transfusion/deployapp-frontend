@@ -12,7 +12,7 @@ export interface S3FormInputs {
 export interface FtpFormInputs {
   name: string,
   server: string,
-  port: string,
+  port: number,
   username: string,
   password: string,
   directory: string

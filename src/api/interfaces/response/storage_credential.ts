@@ -32,14 +32,14 @@ export function instanceOfS3Credential(object?: any): object is S3Credential {
  */
 export interface FtpCredential extends StorageCredential {
   server: string,
-  port: Number,
+  port: number,
   username: string,
   password: string,
   directory: string,
   baseUrl: string,
 }
 
-export function instanceOfFtpCredential(object?: any): object is S3Credential {
+export function instanceOfFtpCredential(object?: any): object is FtpCredential {
   return object !== null && object !== undefined &&
     'server' in object &&
     'port' in object &&

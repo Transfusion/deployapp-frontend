@@ -2,6 +2,7 @@ import { S3Credential } from "./storage_credential";
 
 export interface CreateS3CredentialResponse {
   success: boolean,
+  id?: string,
   testHeadBucketSuccess: boolean,
   testHeadBucketError: string,
   skipTestPublicAccess: boolean,
@@ -17,6 +18,7 @@ export interface CreateS3CredentialResponse {
 export function instanceOfCreateS3CredentialResponse(object?: any): object is CreateS3CredentialResponse {
   return object !== null && object !== undefined &&
     'success' in object &&
+    'id' in object &&
     'testHeadBucketSuccess' in object &&
     'testHeadBucketError' in object &&
     'skipTestPublicAccess' in object &&

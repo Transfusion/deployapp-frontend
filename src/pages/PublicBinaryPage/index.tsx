@@ -130,7 +130,7 @@ export default function PublicBinaryPage() {
       <div contentEditable spellCheck={false}>{`Ver. ${data?.version} Build ${data?.build}`}</div>
     </div>}
 
-    <a aria-label="tap here to install" target="_blank" href={downloadURL} type="button" className="bg-gradient-to-r from-teal-400 to-blue-500 hover:from-teal-500 hover:to-blue-600 text-3xl text-white font-semibold px-6 py-3 my-5 rounded-full w-full md:w-auto inline-block text-center">
+    <a aria-label="tap here to install" target="_blank" href={downloadURL} className="bg-gradient-to-r from-teal-400 to-blue-500 hover:from-teal-500 hover:to-blue-600 text-3xl text-white font-semibold px-6 py-3 my-5 rounded-full w-full md:w-auto inline-block text-center align-middle">
       Install
     </a>
 

@@ -1,4 +1,5 @@
 import axiosClient from "./client";
+import { ApkCert } from "./interfaces/response/apk_cert";
 import { AppBinary } from "./interfaces/response/app_binary";
 import { AppBinaryAsset } from "./interfaces/response/app_binary_asset";
 import { AppBinaryJob } from "./interfaces/response/app_binary_job";
@@ -117,4 +118,12 @@ export function getMobileprovisions(id: string) {
 
 export function getUnwrappedMobileprovisions(id: string) {
   return getMobileprovisions(id).then(resp => resp.data);
+}
+
+export function getApkCerts(id: string) {
+  return axiosClient.get<ApkCert[]>(`/storage/api/v1/app/binary/${id}/apkcerts`);
+}
+
+export function getUnwrappedApkCerts(id: string) {
+  return getApkCerts(id).then(resp => resp.data);
 }

@@ -2,6 +2,7 @@ import _ from "lodash"
 import { Apk } from "../../../api/interfaces/response/app_binary"
 import { InfoCell } from "../../../components/InfoCell"
 import { formatBytes, humanReadableDate } from "../../../utils/utils"
+import CertificateDetails from "./components/CertificateDetails"
 import { ManifestPanel } from "./components/ManifestPanel"
 
 export default function AboutAPK({ binary }: {
@@ -58,5 +59,8 @@ export default function AboutAPK({ binary }: {
 
     <h3 className="font-semibold text-2xl">Manifest</h3>
     {binary.manifestXml && <ManifestPanel manifestXml={binary.manifestXml} />}
+
+    <h3 className="font-semibold text-2xl">Signing Certificates</h3>
+    <CertificateDetails id={binary.id} />
   </>
 }

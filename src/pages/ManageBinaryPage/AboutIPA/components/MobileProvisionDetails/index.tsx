@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
+import _ from "lodash";
 import { useState } from "react";
 import { BsFillArrowDownCircleFill, BsFillArrowUpCircleFill } from "react-icons/bs";
 import { getUnwrappedMobileprovisions } from "../../../../../api/AppBinary";
@@ -40,7 +41,7 @@ export default function MobileProvisionDetails({ id }: {
 
   if (isLoading || isFetching) return <p className="text-gray-500 loading">Loading</p>
 
-  if (data?.length == 0) return <p className="text-gray-500">Not available.</p>
+  if (_.isEmpty(data)) return <p className="text-gray-500">Not available.</p>
 
   return <>{data?.map((mob, idx) => <MobileProvisionPanel key={mob.id} idx={idx} mob={mob} />)}</>;
 }

@@ -46,3 +46,23 @@ export function instanceOfIpa(object?: AppBinary): object is Ipa {
   return object !== undefined && object !== null
     && object?.type === BINARY_TYPES.IPA;
 }
+
+export interface Apk extends AppBinary {
+  minSdkVersion: string,
+  minOsVersion: string,
+  targetSdkVersion: string,
+  wear: boolean,
+  tv: boolean,
+  automotive: boolean,
+  deviceType: string,
+  useFeatures?: string[]
+  usePermissions?: string[],
+  deepLinks?: string[],
+  schemes?: string[],
+  manifestXml: string
+}
+
+export function instanceOfApk(object?: AppBinary): object is Apk {
+  return object !== undefined && object !== null
+    && object?.type === BINARY_TYPES.APK;
+}

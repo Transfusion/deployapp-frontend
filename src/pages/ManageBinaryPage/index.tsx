@@ -4,10 +4,11 @@ import classNames from "classnames";
 import { BsArrowRepeat, BsFillTrashFill } from "react-icons/bs";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { deleteBinary, getUnwrappedBinary, getUnwrappedJobs, updateAppBinaryAvailable } from "../../api/AppBinary";
-import { AppBinary, instanceOfIpa } from "../../api/interfaces/response/app_binary";
+import { AppBinary, instanceOfApk, instanceOfIpa } from "../../api/interfaces/response/app_binary";
 import { AppBinaryJob } from "../../api/interfaces/response/app_binary_job";
 import { useAuth } from "../../contexts/AuthProvider";
 import AboutIPA from "./AboutIPA";
+import AboutAPK from "./AboutAPK";
 import AssetsOverview from "./AssetsOverview";
 import DeleteUnsuccessfulAlert from "./components/DeleteUnsuccessfulAlert";
 import ToggleSuccessfulAlert from "./components/ToggleSuccessfulAlert";
@@ -118,6 +119,7 @@ export default function EditBinaryPage() {
     </div>
 
     {instanceOfIpa(data) && <AboutIPA binary={data} />}
+    {instanceOfApk(data) && <AboutAPK binary={data} />}
 
     {/* Description */}
 

@@ -7,14 +7,15 @@ import { deleteBinary, getUnwrappedBinary, getUnwrappedJobs, updateAppBinaryAvai
 import { AppBinary, instanceOfApk, instanceOfIpa } from "../../api/interfaces/response/app_binary";
 import { AppBinaryJob } from "../../api/interfaces/response/app_binary_job";
 import { useAuth } from "../../contexts/AuthProvider";
-import AboutIPA from "./AboutIPA";
 import AboutAPK from "./AboutAPK";
+import AboutIPA from "./AboutIPA";
 import AssetsOverview from "./AssetsOverview";
 import DeleteUnsuccessfulAlert from "./components/DeleteUnsuccessfulAlert";
 import ToggleSuccessfulAlert from "./components/ToggleSuccessfulAlert";
 import ToggleUnsuccessfulAlert from "./components/ToggleUnsuccessfulAlert";
 import EditDescription from "./EditDescription";
 // import Description from "./Description";
+import APKAssets from "./APKAssets";
 import IPAAssets from "./IPAAssets";
 import PendingJobs from "./PendingJobs";
 
@@ -114,7 +115,8 @@ export default function EditBinaryPage() {
 
     <div>
       <a target={"_blank"} href={iconURL}>
-        <img className="inline-block max-w-[114px] rounded-3xl shadow-md my-5" src={iconURL} />
+        {instanceOfIpa(data) ? <img className="inline-block max-w-[114px] rounded-3xl shadow-md my-5" src={iconURL} />
+          : <img className="inline-block max-w-[150px] my-5" src={iconURL} />}
       </a>
     </div>
 
@@ -129,6 +131,7 @@ export default function EditBinaryPage() {
     {/* list of downloadable files */}
     <AssetsOverview binary={data} />
     {instanceOfIpa(data) && <IPAAssets binary={data} />}
+    {instanceOfApk(data) && <APKAssets binary={data} />}
 
 
     <div className="flex flex-row items-center gap-3">

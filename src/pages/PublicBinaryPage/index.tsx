@@ -5,12 +5,13 @@ import classNames from "classnames";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getUnwrappedBinaryPublic, getUnwrappedPublicUserProfile } from "../../api/AppBinary";
-import { AppBinary, instanceOfIpa } from "../../api/interfaces/response/app_binary";
+import { AppBinary, instanceOfApk, instanceOfIpa } from "../../api/interfaces/response/app_binary";
 import { useAuth } from "../../contexts/AuthProvider";
 import PublicAboutIPA from "./components/PublicAboutIPA";
 
 import { useState } from "react";
 import QRCode from "react-qr-code";
+import PublicAboutAPK from "./components/PublicAboutAPK";
 
 function CreatedByUser({ id }: { id: string }) {
 
@@ -91,6 +92,7 @@ export default function PublicBinaryPage() {
     downloadURL = itmsPlistURL;
   } else {
     // not implemented yet
+    downloadURL = `${process.env.REACT_APP_BASE_URL}storage/api/v1/app/binary/${data?.id}/download`
   }
 
   return <div className="mx-auto px-10 mb-10" data-color-mode="light">
@@ -99,7 +101,8 @@ export default function PublicBinaryPage() {
 
     <div>
       <a target={"_blank"} href={iconURL}>
-        <img className="inline-block max-w-[114px] rounded-3xl shadow-md my-5" src={iconURL} />
+        {instanceOfIpa(data) ? <img className="inline-block max-w-[114px] rounded-3xl shadow-md my-5" src={iconURL} />
+          : <img className="inline-block max-w-[150px] my-5" src={iconURL} />}
       </a>
     </div>
 
@@ -108,6 +111,7 @@ export default function PublicBinaryPage() {
     {data?.userId && <CreatedByUser id={data.userId} />}
 
     {instanceOfIpa(data) && <PublicAboutIPA binary={data} />}
+    {instanceOfApk(data) && <PublicAboutAPK binary={data} />}
 
     <div className="flex flex-row gap-2">
       <button aria-label="copy to clipboard" type="button" onClick={copyURLToClipboard} className="border border-2 border-blue-700 font-semibold text-blue-700 hover:bg-blue-700 hover:text-white rounded-full px-3 py-1">

@@ -2,6 +2,7 @@ import axiosClient from "./client";
 import { ApkCert } from "./interfaces/response/apk_cert";
 import { AppBinary } from "./interfaces/response/app_binary";
 import { AppBinaryAsset } from "./interfaces/response/app_binary_asset";
+import { AppBinaryDownload } from "./interfaces/response/app_binary_download";
 import { AppBinaryJob } from "./interfaces/response/app_binary_job";
 import { GenerateAssetResult } from "./interfaces/response/generate_asset";
 import { IpaMobileprovision } from "./interfaces/response/ipa_mobileprovision";
@@ -44,6 +45,46 @@ export function getUnwrappedBinaries(page: Number, size = 15,
   sort?: { key: string, direction: string }[],
   types?: string[]) {
   return getBinaries(page, size, search, sort, types).then(resp => resp.data);
+}
+
+export function getBinaryDownloads(id: string, page: Number, size = 15,
+  // search?: { key: string, operation: string, value: string }[],
+  sort?: { key: string, direction: string }[],
+  // types?: string[]
+) {
+  let params = new URLSearchParams();
+  params.append("page", page.toString());
+  params.append("size", size.toString());
+  if (sort !== undefined) {
+    for (let { key, direction } of sort) {
+      params.append("sort", `${key},${direction}`);
+    }
+  }
+
+  // if (search !== undefined) {
+  //   for (let { key, operation, value } of search) {
+  //     params.append("searchKey", key);
+  //     params.append("searchOperation", operation);
+  //     params.append("searchValue", value);
+  //   }
+  // }
+
+  // if (types !== undefined) {
+  //   for (let type of types) {
+  //     params.append("types", type);
+  //   }
+  // }
+
+  return axiosClient.get<PagingSortingSpring<AppBinaryDownload>>(`/storage/api/v1/app/binary/${id}/downloads`, { params })
+
+}
+
+export function getUnwrappedBinaryDownloads(id: string, page: Number, size = 15,
+  // search?: { key: string, operation: string, value: string }[],
+  sort?: { key: string, direction: string }[],
+  // types?: string[]
+) {
+  return getBinaryDownloads(id, page, size, sort).then(x => x.data);
 }
 
 export function getBinary(id: string) {

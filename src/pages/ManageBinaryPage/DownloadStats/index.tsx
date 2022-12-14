@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PaginationState, SortingState } from "@tanstack/react-table";
 import MaterialReactTable, { MRT_ColumnDef, MRT_TableInstance } from "material-react-table";
 import { MRT_Localization_EN } from "material-react-table/locales/en";
-import { PropsWithChildren, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { getUnwrappedBinaryDownloads } from "../../../api/AppBinary";
 import { AppBinaryDownload } from "../../../api/interfaces/response/app_binary_download";
 import { humanReadableDate } from "../../../utils/utils";

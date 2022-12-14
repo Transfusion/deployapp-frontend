@@ -5,11 +5,15 @@ import { getUnwrappedProfile } from '../api/Profile'
 import { Logout } from "../api/Logout"
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AxiosResponse, AxiosError } from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 const defaultValue = {
   // login: () => { },
   logout: (() => { }) as Function,
-  profile: {} as Profile | undefined
+  profile: {} as Profile | undefined,
+
+  isFetching: false,
+  isLoading: false,
 }
 
 /* async function bootstrapAppData() {
@@ -55,6 +59,8 @@ function AuthProvider(props: PropsWithChildren<{}>) {
 
   const queryClient = useQueryClient();
 
+  const navigate = useNavigate();
+
   // deleting
   const { isLoading: logoutLoading, isSuccess: logoutSuccess, error: logoutError, mutate: logout } = useMutation<AxiosResponse<void, any>, AxiosError, string>((id: string) => {
     return Logout();
@@ -62,6 +68,7 @@ function AuthProvider(props: PropsWithChildren<{}>) {
     // this object is a MutateOptions
     onSuccess: async () => {
       queryClient.invalidateQueries(['profile']);
+      navigate('/');
     }
   });
 
@@ -83,8 +90,8 @@ function AuthProvider(props: PropsWithChildren<{}>) {
   // }, [run])
 
   const value = React.useMemo(
-    () => ({ profile, logout, /*login, logout, register*/ }),
-    [/*login, logout, register,*/ profile, logout],
+    () => ({ profile, logout, isLoading, isFetching, /*login, logout, register*/ }),
+    [/*login, logout, register,*/ profile, logout, isLoading, isFetching],
   )
 
   // if (isSuccess) {

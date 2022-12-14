@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Outlet, Navigate, useSearchParams } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthProvider';
 
 import Navbar from './components/Navbar';
@@ -12,6 +12,7 @@ import ManageStorage from './pages/ManageStorage';
 import Binaries from './pages/Binaries';
 import ManageBinaryPage from './pages/ManageBinaryPage';
 import PublicBinaryPage from './pages/PublicBinaryPage';
+import Profile from './pages/Profile';
 
 
 // const Home = () => (
@@ -25,6 +26,22 @@ import PublicBinaryPage from './pages/PublicBinaryPage';
 //     <h2>Login</h2>
 //   </div>
 // }
+
+const GlobalRedirectLayout = () => {
+  const location = useLocation(); // <-- current location being accessed
+  // const { isAuthenticated } = /* auth state from local state/context/redux/etc */
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  if (searchParams.has('authError')) {
+    return <Navigate
+      to="/login"
+      replace                    // <-- redirect
+      state={{ from: location, authError: searchParams.get('authError') }} // <-- forward location
+    />
+  }
+  return <Outlet />
+};
+
 
 function App() {
   return (
@@ -48,13 +65,15 @@ function App() {
 
           <Navbar />
           <Routes>
-            <Route index element={<Home />} />
-            <Route path="/profile" element={<Login />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/storage" element={<ManageStorage />} />
-            <Route path="/binaries" element={<Binaries />} />
-            <Route path="/manage/:binaryId" element={<ManageBinaryPage />} />
-            <Route path="/i/:binaryId" element={<PublicBinaryPage />} />
+            <Route element={<GlobalRedirectLayout />}>
+              <Route index element={<Home />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/storage" element={<ManageStorage />} />
+              <Route path="/binaries" element={<Binaries />} />
+              <Route path="/manage/:binaryId" element={<ManageBinaryPage />} />
+              <Route path="/i/:binaryId" element={<PublicBinaryPage />} />
+            </Route>
           </Routes>
         </AuthProvider>
       </Router>

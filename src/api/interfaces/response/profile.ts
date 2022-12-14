@@ -15,6 +15,9 @@ interface Profile {
   username: string;
   name: string;
   email?: string;
+
+  oauth_login: boolean;
+  oauth_registration_id?: string;
 }
 
 export default Profile

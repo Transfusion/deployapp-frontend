@@ -40,7 +40,7 @@ export default function UpdateUnsuccessfulAlert({ error }: { error?: AxiosError 
     info = <p className="text-mono">{JSON.stringify(error.response?.data)}</p>
   }
 
-  return <div className="bg-red-100 py-5 px-6 mb-3 text-base text-red-700 inline-flex items-center w-full" role="alert">
+  return <div className="bg-red-100 py-5 px-6 mb-3 text-base text-red-700 inline-flex items-center w-full break-words" role="alert">
     <BsExclamationCircle size={'1.5em'} style={{ marginRight: "15px", minWidth: '30px' }} />
     <div className="min-w-0">
       <p>Save unsuccessful.</p>

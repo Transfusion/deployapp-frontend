@@ -37,7 +37,7 @@ export default function IPAAssets({ binary }: {
         <h3 className="font-semibold text-2xl">.mobileprovision</h3>
         <button disabled={mutationLoading} onClick={() => {
           generateAsset({ id: binary.id, type: 'MOBILEPROVISION' })
-        }} type="button" className={'text-base text-blue-700 hover:text-white border-2 border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm p-2 text-center mt-2'}>
+        }} className={'text-base text-blue-700 hover:text-white border-2 border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm p-2 text-center mt-2'}>
           <FaFileImport className="inline-block mr-2" size={'1.5em'} />
           Generate
         </button>
@@ -49,7 +49,7 @@ export default function IPAAssets({ binary }: {
 
         <button disabled={mutationLoading} onClick={() => {
           generateAsset({ id: binary.id, type: 'PUBLIC_ICON' })
-        }} type="button" className={'text-base text-blue-700 hover:text-white border-2 border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm p-2 text-center mt-2'}>
+        }} className={'text-base text-blue-700 hover:text-white border-2 border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm p-2 text-center mt-2'}>
           <FaFileImport className="inline-block mr-2" size={'1.5em'} />
           Generate
         </button>

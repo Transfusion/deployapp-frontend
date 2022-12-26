@@ -59,15 +59,16 @@ function LoginForm() {
   return <>
 
     <div className="px-5 py-7">
-      <label className="font-semibold text-sm text-gray-600 pb-1 block">Email</label>
+      <label className="font-semibold text-sm text-gray-600 pb-1 block">Email / Username</label>
       <Controller
         name="email"
         control={control}
         rules={{
-          required: true, pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          required: true, 
+          // pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
         }}
         render={({ field }) =>
-          <input disabled={disableInputs} type="email" placeholder="john.doe@email.com" className={classNames("border  px-3 py-2 mt-1 mb-5 text-sm w-full", { "border-rose-500": errors.email })} {...field} />} />
+          <input disabled={disableInputs} /*type="email"*/ placeholder="john.doe@email.com" className={classNames("border  px-3 py-2 mt-1 mb-5 text-sm w-full", { "border-rose-500": errors.email })} {...field} />} />
 
       <label className="font-semibold text-sm text-gray-600 pb-1 block">Password</label>
       <Controller

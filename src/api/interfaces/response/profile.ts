@@ -12,6 +12,7 @@ interface Profile {
   authenticated: boolean;
   id?: string;
   has_username: boolean;
+  has_password: boolean;
   username: string;
   name: string;
   email?: string;

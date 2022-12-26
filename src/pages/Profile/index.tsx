@@ -4,6 +4,7 @@ import classNames from "classnames";
 import { deleteConnectedAccount, getConnectedAccounts, getUnwrappedConnectedAccounts } from "../../api/Profile";
 import { useAuth } from "../../contexts/AuthProvider";
 import NameAccordion from "./components/NameAccordion";
+import PasswordAccordion from "./components/PasswordAccordion";
 import UsernameAccordion from "./components/UsernameAccordion";
 
 export default function Profile() {
@@ -51,6 +52,7 @@ export default function Profile() {
     <div className="md:w-3/4 max-w-2xl pb-5">
       <UsernameAccordion />
       <NameAccordion />
+      <PasswordAccordion />
     </div>
 
     <h3 className={classNames("font-semibold text-4xl", { "loading": connectedAccountsLoading })}>Connected accounts</h3>

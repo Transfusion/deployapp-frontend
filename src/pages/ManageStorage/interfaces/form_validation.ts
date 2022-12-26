@@ -19,8 +19,18 @@ export interface FtpFormInputs {
   baseUrl: string
 }
 
+// used in Login/index.tsx
+export interface LoginFormInputs {
+  email: string,
+  password: string,
+}
+
 export interface RegisterFormInputs {
   email: string,
   password: string,
   confirmPassword: string,
+}
+
+export interface ResendVerificationFormInputs {
+  newEmail: string,
 }

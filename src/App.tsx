@@ -13,6 +13,7 @@ import Binaries from './pages/Binaries';
 import ManageBinaryPage from './pages/ManageBinaryPage';
 import PublicBinaryPage from './pages/PublicBinaryPage';
 import Profile from './pages/Profile';
+import AccountVerification from './pages/AccountVerification';
 
 
 // const Home = () => (
@@ -37,6 +38,12 @@ const GlobalRedirectLayout = () => {
       to="/login"
       replace                    // <-- redirect
       state={{ from: location, authError: searchParams.get('authError') }} // <-- forward location
+    />
+  } else if (searchParams.has('verify')) {
+    return <Navigate
+      to="/verify"
+      replace                    // <-- redirect
+      state={{ from: location, verify: searchParams.get('verify') }} // <-- forward location
     />
   }
   return <Outlet />
@@ -69,6 +76,7 @@ function App() {
               <Route index element={<Home />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/verify" element={<AccountVerification />} />
               <Route path="/storage" element={<ManageStorage />} />
               <Route path="/binaries" element={<Binaries />} />
               <Route path="/manage/:binaryId" element={<ManageBinaryPage />} />

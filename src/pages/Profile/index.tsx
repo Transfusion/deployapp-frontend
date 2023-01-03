@@ -3,6 +3,7 @@ import { AxiosResponse, AxiosError } from "axios";
 import classNames from "classnames";
 import { deleteConnectedAccount, getConnectedAccounts, getUnwrappedConnectedAccounts } from "../../api/Profile";
 import { useAuth } from "../../contexts/AuthProvider";
+import EmailAccordion from "./components/EmailAccordion";
 import NameAccordion from "./components/NameAccordion";
 import PasswordAccordion from "./components/PasswordAccordion";
 import UsernameAccordion from "./components/UsernameAccordion";
@@ -53,6 +54,7 @@ export default function Profile() {
       <UsernameAccordion />
       <NameAccordion />
       <PasswordAccordion />
+      <EmailAccordion />
     </div>
 
     <h3 className={classNames("font-semibold text-4xl", { "loading": connectedAccountsLoading })}>Connected accounts</h3>

@@ -34,3 +34,7 @@ export interface RegisterFormInputs {
 export interface ResendVerificationFormInputs {
   newEmail: string,
 }
+
+export interface ForgotPasswordFormInputs {
+  email: string
+}

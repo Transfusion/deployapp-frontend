@@ -9,14 +9,15 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { RegisterRequest } from "../../api/interfaces/request/register";
 import { RegisterResult } from "../../api/interfaces/response/register";
-import { LoginFormInputs, RegisterFormInputs } from "../ManageStorage/interfaces/form_validation";
+import { ForgotPasswordFormInputs, LoginFormInputs, RegisterFormInputs } from "../ManageStorage/interfaces/form_validation";
 
-import { register as performRegister, login as performLogin } from "../../api/Profile";
+import { register as performRegister, login as performLogin, resetPassword as performResetPassword } from "../../api/Profile";
 import RegisterSuccessfulAlert from "./components/RegisterSuccessfulAlert";
 import RegisterUnsuccessfulAlert from "./components/RegisterUnsuccessfulAlert";
 import { LoginRequest } from "../../api/interfaces/request/login";
 import { LoginResult } from "../../api/interfaces/response/login";
 import LoginUnsuccessfulAlert from "./components/LoginUnsuccessfulAlert";
+import { ResetPasswordRequest } from "../../api/interfaces/request/reset_password_request";
 
 const SocialLoginA = styled.a.attrs({
   // type: 'button',
@@ -64,7 +65,7 @@ function LoginForm() {
         name="email"
         control={control}
         rules={{
-          required: true, 
+          required: true,
           // pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
         }}
         render={({ field }) =>
@@ -166,6 +167,61 @@ function RegisterForm() {
 
 }
 
+function ForgotPasswordForm() {
+
+  const { watch, control, getValues, register, handleSubmit, formState: { errors } } = useForm<ForgotPasswordFormInputs>({
+    // defaultValues: { name: profile?.name }
+  });
+
+  const { isLoading: mutationLoading, isSuccess: mutationSuccess, error: mutationError, mutate: resetPassword } = useMutation<AxiosResponse<void, any>, AxiosError<void, any>, ResetPasswordRequest>(req => {
+    return performResetPassword(req);
+  }, {
+    // this object is a MutateOptions
+    // onSuccess
+  });
+
+  const disableInputs = mutationLoading;
+
+  const onSubmit: SubmitHandler<ForgotPasswordFormInputs> = data => {
+    resetPassword({ ...data, redirectBaseUrl: process.env.REACT_APP_OAUTH_REDIRECT_BASE_URL || window.location.origin });
+  }
+
+  return <>
+    <div className="px-5 py-7">
+      <label className="font-semibold text-sm text-gray-600 pb-1 block">Email</label>
+      <Controller
+        name="email"
+        control={control}
+        rules={{
+          required: true, pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        }}
+        render={({ field }) =>
+          <input disabled={disableInputs} type="email" placeholder="john.doe@email.com" className={classNames("border  px-3 py-2 mt-1 mb-5 text-sm w-full", { "border-rose-500": errors.email })} {...field} />} />
+
+      <button disabled={disableInputs} onClick={handleSubmit(onSubmit)} type="button" className="mb-5 transition duration-200 bg-blue-500 hover:bg-blue-600 focus:bg-blue-700 focus:shadow-sm focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 text-white w-full py-2.5  text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block">
+        <span className="inline-block mr-2">Reset Password</span>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-4 h-4 inline-block">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+      </button>
+
+      {mutationError && <div className="bg-red-100 py-5 px-6 mb-3 text-base text-red-700 inline-flex items-center w-full break-words" role="alert">
+        <BsExclamationCircle size={'1.5em'} style={{ marginRight: "15px", minWidth: '30px' }} />
+        <div className="min-w-0">
+          <p>Please wait at least 10 minutes before retrying.</p>
+        </div>
+      </div>}
+
+      {mutationSuccess && <div className="bg-green-100 py-5 px-6 mb-3 text-base text-green-700 inline-flex items-center w-full" role="alert">
+        <BsCheckCircle size={'1.5em'} style={{ marginRight: "15px", minWidth: '30px' }} />
+        <div className="min-w-0">
+          <p>Please check your inbox for the password reset link.</p>
+        </div>
+      </div>}
+    </div>
+  </>
+}
+
 export default function Login() {
 
   const [formState, setFormState] = useState(FORM_STATE.LOGIN);
@@ -177,7 +233,7 @@ export default function Login() {
   const { state } = useLocation();
   console.log(state);
 
-  const { verifySuccess, authError } = (state as { verifySuccess?: boolean, authError?: string }) ?? { authError: null };
+  const { verifySuccess, resetPasswordSuccess, authError } = (state as { verifySuccess?: boolean, resetPasswordSuccess?: boolean, authError?: string }) ?? { authError: null };
 
 
   return <div className="flex flex-col justify-center sm:py-12">
@@ -187,13 +243,14 @@ export default function Login() {
       <div className="bg-white shadow w-full  divide-y divide-gray-200">
         {formState === FORM_STATE.LOGIN && <LoginForm />}
         {formState === FORM_STATE.REGISTER && <RegisterForm />}
+        {formState === FORM_STATE.FORGOT_PASSWORD && <ForgotPasswordForm />}
 
 
         <div className="py-5">
           <div className="grid grid-cols-2 gap-1">
 
             <div className="text-center sm:text-left whitespace-nowrap">
-              <button className="transition duration-200 mx-5 px-5 py-4 cursor-pointer font-normal text-sm  text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-200 focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 ring-inset">
+              <button onClick={() => { setFormState(FORM_STATE.FORGOT_PASSWORD); }} className="transition duration-200 mx-5 px-5 py-4 cursor-pointer font-normal text-sm  text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-200 focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 ring-inset">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-4 h-4 inline-block align-text-top">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
                 </svg>
@@ -256,6 +313,14 @@ export default function Login() {
           <p>Verification successful. You may now login.</p>
         </div>
       </div>}
+
+      {resetPasswordSuccess && <div className="bg-green-100 py-5 px-6 mb-3 text-base text-green-700 inline-flex items-center w-full" role="alert">
+        <BsCheckCircle size={'1.5em'} style={{ marginRight: "15px", minWidth: '30px' }} />
+        <div className="min-w-0">
+          <p>Password reset successful. You may now login.</p>
+        </div>
+      </div>}
+
     </div>
   </div>
 }

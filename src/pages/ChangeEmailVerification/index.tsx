@@ -3,33 +3,34 @@ import { AxiosResponse, AxiosError } from "axios";
 import { useEffect } from "react";
 import { BsExclamationCircle } from "react-icons/bs";
 import { useLocation, useNavigate } from "react-router-dom";
+import { ConfirmChangeEmailRequest } from "../../api/interfaces/request/confirm_change_email_request";
 
-import { verify as performVerify } from "../../api/Profile";
+import { confirmChangeEmail } from "../../api/Profile";
 
-export default function AccountVerification() {
+export default function ChangeEmailVerification() {
 
   const navigate = useNavigate();
   const { state } = useLocation();
-  const { verify } = (state as { verify?: string }) ?? { verify: undefined };
+  const { confirm_change_email, new_email } = (state as { confirm_change_email?: string, new_email?: string }) ?? { confirm_change_email: undefined, new_email: undefined };
 
-  const { isLoading, isSuccess, error, mutate } = useMutation<AxiosResponse<void, any>, AxiosError, string>((token: string) => {
-    return performVerify({ token });
+  const { isLoading, isSuccess, error, mutate } = useMutation<AxiosResponse<void, any>, AxiosError, ConfirmChangeEmailRequest>((req) => {
+    return confirmChangeEmail(req);
   }, {
     // this object is a MutateOptions
     onSuccess: () => {
-      navigate('/login', { state: { verifySuccess: true } })
+      navigate('/profile');
     }
   });
 
   useEffect(() => {
-    if (verify !== undefined) {
-      mutate(verify);
+    if (confirm_change_email !== undefined && new_email !== undefined) {
+      mutate({ token: confirm_change_email, email: new_email });
     }
   }, [])
 
   return <div className="flex flex-col justify-center sm:py-12">
     <div className="p-10 xs:p-0 mx-auto md:w-full md:max-w-md">
-      <h1 className="font-bold text-center text-2xl mb-5">Verifying your account ...</h1>
+      <h1 className="font-bold text-center text-2xl mb-5">Verifying your new email ...</h1>
 
       <div className="text-center">
         {/* https://flowbite.com/docs/components/spinner/ */}
@@ -42,7 +43,7 @@ export default function AccountVerification() {
         </div>
 
 
-        {(!verify || error) && <div className="bg-red-100 py-5 px-6 mb-3 text-base text-red-700 inline-flex items-center w-full break-words" role="alert">
+        {(!confirm_change_email || !new_email || error) && <div className="bg-red-100 py-5 px-6 mb-3 text-base text-red-700 inline-flex items-center w-full break-words" role="alert">
           <BsExclamationCircle size={'1.5em'} style={{ marginRight: "15px", minWidth: '30px' }} />
           <div className="min-w-0">
             Please ensure your verification link is valid, or request a new one.

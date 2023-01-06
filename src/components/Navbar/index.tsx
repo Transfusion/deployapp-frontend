@@ -7,35 +7,53 @@ import { useAuth } from '../../contexts/AuthProvider';
 
 import styles from './Navbar.module.css';
 
-const NonDropdownA = styled.a.attrs({
-  className: 'underline-offset-4 hover:underline hover:decoration-4 focus:outline-none cursor-pointer'
-})``;
+const MobileSpan = styled.span.attrs({
+  className: 'p-2 block underline-offset-4 hover:underline hover:decoration-4 focus:outline-none cursor-pointer'
+})`
+  // color: var(--colors-primary);
+`;
 
 const NonDropdownSpan = styled.span.attrs({
   className: 'underline-offset-4 hover:underline hover:decoration-4 focus:outline-none cursor-pointer'
 })``;
 
-/* class NavItem {
+class NavItem {
   constructor(name: string,
     url: string,
     hideMobile: boolean,
-    external: boolean,) {
+    external: boolean,
+
+    authenticated: boolean,
+    notAuthenticated: boolean,
+
+    callback?: () => any
+  ) {
     this.name = name;
     this.url = url;
     this.hideMobile = hideMobile;
     this.external = external;
+
+    this.authenticated = authenticated;
+    this.notAuthenticated = notAuthenticated;
+
+    this.callback = callback;
   }
 
   name: string;
   url: string;
   hideMobile: boolean;
   external: boolean;
-} */
+
+  authenticated: boolean;
+  notAuthenticated: boolean;
+
+  callback?: () => any;
+}
 
 const Nav = styled.nav.attrs({
-  className: classNames('mix-blend-difference', 'fixed', 'w-full', 'top-0' /*, styles.navbar */)
+  className: classNames('fixed', 'w-full', 'top-0', 'z-40' /*, styles.navbar */)
 })`
-  color: var(--colors-background);
+  // color: var(--colors-background);
 `;
 
 export default function Navbar() {
@@ -46,32 +64,80 @@ export default function Navbar() {
     setMobileExpanded(!mobileExpanded);
   }
 
+  const navItems = [
+    {
+      name: 'Home',
+      url: '/',
+      hideMobile: false, external: false,
+
+      authenticated: true,
+      notAuthenticated: true
+    },
+    {
+      name: 'Manage Storage',
+      url: '/storage',
+      hideMobile: false, external: false,
+
+      authenticated: true,
+      notAuthenticated: true
+    },
+    {
+      name: 'App Binaries',
+      url: '/binaries',
+      hideMobile: false, external: false,
+
+      authenticated: true,
+      notAuthenticated: true
+    },
+    {
+      name: 'Profile',
+      url: '/profile',
+
+      hideMobile: true, external: false,
+
+      authenticated: true,
+      notAuthenticated: false
+    },
+    {
+      name: 'Login',
+      url: '/login',
+
+      hideMobile: false, external: false,
+
+      authenticated: false,
+      notAuthenticated: true
+    },
+    {
+      name: 'Logout',
+      url: '',
+
+      hideMobile: true, external: false,
+
+      authenticated: true,
+      notAuthenticated: false,
+      callback: () => { logout() }
+    }
+
+  ] as NavItem[]
+
+  console.log("jaja_navitems", navItems[0].authenticated);
+
   return <Nav>
     {/* desktop viewport */}
     <div className="fixed w-full flex justify-end p-2.5 space-x-3 hidden sm:flex">
       {/* test internal link */}
 
-      <NavLink to="/" >
-        <NonDropdownSpan>Home</NonDropdownSpan>
-      </NavLink>
+      {navItems.map(({ name, url, external, authenticated, notAuthenticated, callback }) => {
+        let show = (authenticated && profile?.authenticated || notAuthenticated && !profile?.authenticated);
+        if (!show) return null;
 
-      <NavLink to="/storage" >
-        <NonDropdownSpan>Manage Storage</NonDropdownSpan>
-      </NavLink>
+        if (callback) return <NonDropdownSpan onClick={callback}>{name}</NonDropdownSpan>
+        return <NavLink to={url} >
+          <NonDropdownSpan>{name}</NonDropdownSpan>
+        </NavLink>
 
-      <NavLink to="/binaries" >
-        <NonDropdownSpan>App Binaries</NonDropdownSpan>
-      </NavLink>
+      })}
 
-      {profile?.authenticated && <NavLink to="/profile" >
-        <NonDropdownSpan>Profile</NonDropdownSpan>
-      </NavLink>}
-
-      {profile?.authenticated ?
-        <NonDropdownSpan onClick={() => { logout() }}>Logout</NonDropdownSpan> :
-        <NavLink to="/login" >
-          <NonDropdownSpan>Login</NonDropdownSpan>
-        </NavLink>}
     </div>
 
 
@@ -82,7 +148,18 @@ export default function Navbar() {
       {/* inner container with padding */}
       <div className={classNames('pt-10', 'px-2', 'pb-2', 'space-y-1')}>
 
+        {navItems
+          .filter(({ hideMobile }) => hideMobile)
+          .map(({ name, url, external, authenticated, notAuthenticated, callback }) => {
 
+            let show = (authenticated && profile?.authenticated || notAuthenticated && !profile?.authenticated);
+            if (!show) return null;
+            if (callback)
+              return <div><MobileSpan onClick={callback}>{name}</MobileSpan></div>
+            return <NavLink to={url} >
+              <MobileSpan>{name}</MobileSpan>
+            </NavLink>
+          })}
       </div>
     </div>
 
@@ -93,39 +170,25 @@ export default function Navbar() {
       'sm:hidden': !mobileExpanded
     })}>
 
-      {/* <button onClick={toggleMobileExpanded}>
+      {navItems.filter(({ hideMobile }) => !hideMobile).map(({ name, url, external, authenticated, notAuthenticated, callback }) => {
+        let show = (authenticated && profile?.authenticated || notAuthenticated && !profile?.authenticated);
+        if (!show) return null;
+
+        if (callback) return <NonDropdownSpan onClick={callback}>{name}</NonDropdownSpan>
+        return <NavLink to={url} >
+          <NonDropdownSpan>{name}</NonDropdownSpan>
+        </NavLink>
+
+      })}
+
+      <button onClick={toggleMobileExpanded}>
         <MdExpandMore className={
           classNames(styles['expand-chevron'], {
             [styles.expanded]: mobileExpanded
           })
         } size={'1.5em'} />
-      </button> */}
+      </button>
 
-      <NavLink to="/" >
-        <NonDropdownSpan>Home</NonDropdownSpan>
-      </NavLink>
-
-      <NavLink to="/storage" >
-        <NonDropdownSpan>Manage Storage</NonDropdownSpan>
-      </NavLink>
-
-      <NavLink to="/binaries" >
-        <NonDropdownSpan>App Binaries</NonDropdownSpan>
-      </NavLink>
-
-      {profile?.authenticated && <NavLink to="/profile" >
-        <NonDropdownSpan>Profile</NonDropdownSpan>
-      </NavLink>}
-
-      {profile?.authenticated && <NavLink to="/profile" >
-        <NonDropdownSpan>Profile</NonDropdownSpan>
-      </NavLink>}
-
-      {profile?.authenticated ?
-        <NonDropdownSpan onClick={() => { logout() }}>Logout</NonDropdownSpan> :
-        <NavLink to="/login" >
-          <NonDropdownSpan>Login</NonDropdownSpan>
-        </NavLink>}
     </div>
 
 

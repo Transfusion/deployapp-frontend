@@ -46,7 +46,7 @@ export default function Profile() {
     else if (providerName === 'github') window.open([process.env.REACT_APP_GITHUB_AUTH_URL, process.env.REACT_APP_OAUTH_REDIRECT_BASE_URL + '/profile'].join(""));
   }
 
-  return <div className="mx-auto px-10">
+  return <div className="mx-auto md:px-10 px-5">
     <h1 className="py-10 subpixel-antialiased font-semibold text-5xl">Profile</h1>
 
     {/* <Input placeholder="sample@email.com" /> */}

@@ -117,7 +117,7 @@ export default function Binaries() {
   );
 
 
-  return <div className="mx-auto px-10">
+  return <div className="mx-auto md:px-10 px-5">
     <h1 className="py-10 subpixel-antialiased font-semibold text-5xl">App Binaries</h1>
 
     <MaterialReactTable

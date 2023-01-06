@@ -95,7 +95,7 @@ export default function EditBinaryPage() {
   </div>;
 
   if (data === undefined) {
-    if (isLoading || isFetching) return <div className="mx-auto px-10">
+    if (isLoading || isFetching) return <div className="mx-auto md:px-10 px-5">
       <h1 className={classNames("py-10", "subpixel-antialiased", "font-semibold", "text-5xl", "loading")}  >Editing</h1>
     </div>
 
@@ -109,7 +109,7 @@ export default function EditBinaryPage() {
 
   const iconURL = `${process.env.REACT_APP_BASE_URL}storage/api/v1/app/binary/${data?.id}/icon`;
 
-  return <div className="mx-auto px-10 mb-10" data-color-mode="light">
+  return <div className="mx-auto md:px-10 px-5 mb-10" data-color-mode="light">
     <h1 className={classNames("pt-10", "subpixel-antialiased", "font-semibold", "text-5xl")}  >Editing {data?.name}</h1>
 
     <Link target={"_blank"} className="inline-block hover:underline text-blue-700" to={`/i/${data?.id}`}>Click here for the public link</Link>

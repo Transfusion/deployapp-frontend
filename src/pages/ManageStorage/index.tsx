@@ -70,7 +70,7 @@ export default function ManageStorage() {
   const mutationSuccess = addS3Success || addFtpSuccess;
   const mutationError = addS3Error || addFtpError;
 
-  return <div className="mx-auto px-10">
+  return <div className="mx-auto md:px-10 px-5">
     <h1 className="py-10 subpixel-antialiased font-semibold text-5xl">Storage</h1>
 
     <div className={classNames('pb-5', 'flex', 'flex-row', 'justify-end')}>

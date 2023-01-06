@@ -8,7 +8,7 @@
     overflow: hidden;
     transition: max-height .25s ease-in-out;
 
-    /* background-color: var(--colors-background); */
+    background-color: var(--colors-background);
 }
 
 .mobile-panel-expanded {

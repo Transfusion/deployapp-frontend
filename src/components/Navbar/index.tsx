@@ -120,8 +120,6 @@ export default function Navbar() {
 
   ] as NavItem[]
 
-  console.log("jaja_navitems", navItems[0].authenticated);
-
   return <Nav>
     {/* desktop viewport */}
     <div className="fixed w-full flex justify-end p-2.5 space-x-3 hidden sm:flex">

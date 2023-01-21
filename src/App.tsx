@@ -16,6 +16,7 @@ import Profile from './pages/Profile';
 import AccountVerification from './pages/AccountVerification';
 import ChangeEmailVerification from './pages/ChangeEmailVerification';
 import ResetPasswordVerification from './pages/ResetPasswordVerification';
+import AliasPage from './pages/AliasPage';
 
 
 // const Home = () => (
@@ -96,6 +97,7 @@ function App() {
               <Route path="/binaries" element={<Binaries />} />
               <Route path="/manage/:binaryId" element={<ManageBinaryPage />} />
               <Route path="/i/:binaryId" element={<PublicBinaryPage />} />
+              <Route path="/a/:alias" element={<AliasPage />} />
             </Route>
           </Routes>
         </AuthProvider>

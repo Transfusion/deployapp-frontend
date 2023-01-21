@@ -19,6 +19,7 @@ import APKAssets from "./APKAssets";
 import IPAAssets from "./IPAAssets";
 import PendingJobs from "./PendingJobs";
 import DownloadStats from "./DownloadStats";
+import Aliases from "./Aliases";
 
 
 
@@ -155,7 +156,10 @@ export default function EditBinaryPage() {
     <EditDescription binary={data} />
 
     <h3 className="font-semibold text-4xl">Download Stats</h3>
-    <DownloadStats className='py-3' appBinaryId={data?.id} />
+    <DownloadStats appBinaryId={data?.id} />
+
+    <h3 className="font-semibold text-4xl">Aliases</h3>
+    <Aliases appBinaryId={data?.id} />
 
     <h3 className="font-semibold text-4xl pb-2">Settings</h3>
     {/* available, timeframe, password, assets public? */}

@@ -62,7 +62,7 @@ export default function DownloadStats(props: DownloadStatsProps & React.HTMLAttr
         accessorKey: 'ua',
         header: 'User-Agent',
         size: 250,
-        Cell: ({ cell }) => <div className="whitespace-normal">{cell.getValue<string>()}</div>,
+        // Cell: ({ cell }) => <div className="whitespace-normal">{cell.getValue<string>()}</div>,
         // enableColumnFilter: false
       },
     ],
@@ -87,6 +87,7 @@ export default function DownloadStats(props: DownloadStatsProps & React.HTMLAttr
       manualFiltering={false}
       manualPagination
       manualSorting
+      muiTableBodyCellProps={{ sx: { overflowWrap: 'anywhere', whiteSpace: 'normal' } }}
       muiTableContainerProps={{ sx: { maxHeight: '750px' } }}
       muiToolbarAlertBannerProps={
         isError

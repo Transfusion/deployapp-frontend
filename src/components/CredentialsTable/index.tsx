@@ -317,6 +317,7 @@ export default function CredentialsTable({
       manualFiltering
       manualPagination
       manualSorting
+      muiTableBodyCellProps={{ sx: { overflowWrap: 'anywhere', whiteSpace: 'normal' } }}
       muiTableContainerProps={{ sx: { maxHeight: '750px' } }}
       muiToolbarAlertBannerProps={
         isError

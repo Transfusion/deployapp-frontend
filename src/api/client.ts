@@ -13,7 +13,7 @@ const axiosClient = axios.create({
 /**
  * https://stackoverflow.com/questions/65692061/casting-dates-properly-from-an-api-response-in-typescript
  */
-const isoDateFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d*)?$/;
+const isoDateFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d*)?(?:[-+]\d{2}:?\d{2}|Z)?$/;
 function isIsoDateString(value: any): boolean {
   return value && typeof value === "string" && isoDateFormat.test(value);
 }

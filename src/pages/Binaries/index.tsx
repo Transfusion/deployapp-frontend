@@ -12,6 +12,7 @@ import { AppBinary } from "../../api/interfaces/response/app_binary";
 import { useAuth } from "../../contexts/AuthProvider";
 import { BINARY_TYPES } from "../../utils/constants";
 import { humanReadableDate } from "../../utils/utils";
+import Processing from "./Processing";
 
 export default function Binaries() {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ export default function Binaries() {
   } as { key: string, operation: string, value: string }));
 
 
-  const queryKey = ['storage_creds', {
+  const queryKey = ['binaries', {
     page,
     size,
     // organization,
@@ -120,6 +121,9 @@ export default function Binaries() {
   return <div className="mx-auto md:px-10 px-5">
     <h1 className="py-10 subpixel-antialiased font-semibold text-5xl">App Binaries</h1>
 
+    <h3 className="font-semibold text-4xl pb-2">Processing</h3>
+    <Processing />
+
     <MaterialReactTable
       enableRowActions
       enableColumnResizing
@@ -135,6 +139,7 @@ export default function Binaries() {
       manualFiltering
       manualPagination
       manualSorting
+      muiTableBodyCellProps={{ sx: { overflowWrap: 'anywhere', whiteSpace: 'normal' } }}
       muiTableContainerProps={{ sx: { maxHeight: '750px' } }}
       muiToolbarAlertBannerProps={
         isError

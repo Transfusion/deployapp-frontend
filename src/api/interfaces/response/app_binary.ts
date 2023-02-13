@@ -1,5 +1,6 @@
 import { Json } from "../../../types/misc";
 import { BINARY_TYPES } from "../../../utils/constants";
+import { AppBinaryStoreJob } from "./app_binary_store_job";
 
 type AppBinaryType = 'IPA' | 'APK'
 
@@ -21,6 +22,8 @@ export interface AppBinary {
   storageCredential: string,
   description?: string
   available: boolean,
+
+  appBinaryStoreJob?: AppBinaryStoreJob,
 
   organizationId?: string,
   userId?: string,

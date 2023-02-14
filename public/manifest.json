@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "DeployApp",
+  "name": "Distribute in-house or beta apps with DeployApp",
   "icons": [
     {
       "src": "favicon.ico",

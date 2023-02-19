@@ -30,7 +30,7 @@ function PendingJob({ job }: { job: AppBinaryJob }) {
       <div>ID: {job.id}</div>
       <div>Name: {job.name}</div>
       {job.description !== undefined && <div>{job.description}</div>}
-      <div>Created: {job.createdDate}</div>
+      <div>Created: {job.createdDate.toLocaleString()}</div>
 
       <div className={classNames('flex', 'flex-row', 'justify-end', 'gap-5')}>
         <button

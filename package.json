@@ -40,7 +40,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "postinstall": "sh post_install.sh",
+    "postinstall": "bash post_install.sh",
     "start": "react-scripts start",
     "start:dev": "env-cmd -f ./environments/.dev.env react-scripts start",
     "build": "react-scripts build",

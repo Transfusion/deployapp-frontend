@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosResponse, AxiosError } from "axios";
 import classNames from "classnames";
 import { deleteConnectedAccount, getConnectedAccounts, getUnwrappedConnectedAccounts } from "../../api/Profile";
+import Footer from "../../components/Footer";
 import { useAuth } from "../../contexts/AuthProvider";
 import EmailAccordion from "./components/EmailAccordion";
 import NameAccordion from "./components/NameAccordion";
@@ -79,6 +80,7 @@ export default function Profile() {
       {loggedInWithGoogle && <div className="text-sm">You are logged in using this account.</div>}
     </div>
 
+    <Footer />
 
   </div>
 }

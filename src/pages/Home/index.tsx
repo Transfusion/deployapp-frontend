@@ -1,3 +1,4 @@
+import Footer from "../../components/Footer";
 import HomeUpload from "../../components/HomeUpload";
 
 export default function Home() {
@@ -6,10 +7,12 @@ export default function Home() {
 
     <div className="w-full md:w-3/4 max-w-2xl flex flex-col gap-5">
       <h1 className="subpixel-antialiased font-semibold text-3xl">Manage your app betas - and bring your own storage *</h1>
-      <p>* Currently only supports S3-compatible object stores.</p>
+      <p>* Currently supports S3-compatible object stores and FTP-web server combinations.</p>
 
       {/* start of drop to upload */}
       <HomeUpload />
+
+      <Footer />
     </div>
 
   </div>

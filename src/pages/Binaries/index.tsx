@@ -9,6 +9,7 @@ import { useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getUnwrappedBinaries } from "../../api/AppBinary";
 import { AppBinary } from "../../api/interfaces/response/app_binary";
+import Footer from "../../components/Footer";
 import { useAuth } from "../../contexts/AuthProvider";
 import { BINARY_TYPES } from "../../utils/constants";
 import { humanReadableDate } from "../../utils/utils";
@@ -201,5 +202,6 @@ export default function Binaries() {
       localization={MRT_Localization_EN}
     />
 
+    <Footer />
   </div>
 }

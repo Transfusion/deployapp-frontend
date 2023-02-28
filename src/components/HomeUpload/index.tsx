@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import classNames from "classnames";
 import _ from "lodash";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { BsExclamationCircle } from "react-icons/bs";
 import { uploadAppBinaryUnwrapped } from "../../api/AppBinaryUpload";
 import { UploadAppBinaryRequest } from "../../api/interfaces/request/upload_appbinary";
@@ -24,9 +24,13 @@ export default function HomeUpload() {
   // const [credId, setCredId] = useState<string | undefined>(undefined);
   const [storageCred, setStorageCred] = useState<StorageCredential | undefined>(undefined);
 
-  const { data, isLoading, isSuccess, error, mutate } = useMutation<AppBinary, AxiosError, UploadMutationReq>((req: UploadMutationReq) => {
+  const uploadAbortControllerRef = useRef<AbortController | null>(null);
+
+  const { data, isLoading, isSuccess, error, mutate, reset } = useMutation<AppBinary, AxiosError, UploadMutationReq>((req: UploadMutationReq) => {
+    uploadAbortControllerRef.current = new AbortController()
+
     const { data, onUploadProgress } = req;
-    return uploadAppBinaryUnwrapped(data, onUploadProgress);
+    return uploadAppBinaryUnwrapped(data, onUploadProgress, uploadAbortControllerRef.current.signal);
   }, {
     // this object is a MutateOptions
     // onSuccess: onDeleteSuccess
@@ -65,8 +69,13 @@ export default function HomeUpload() {
         binary: file,
         credentialCreatedOn: storageCred.createdOn
       },
-      onUploadProgress: evt => { console.log(evt); setUploadProgressEvt(evt); }
+      onUploadProgress: evt => { console.log(evt); setUploadProgressEvt(evt); },
     });
+  }
+
+  const cancelUpload = () => {
+    uploadAbortControllerRef.current?.abort();
+    reset();
   }
 
   return <>
@@ -90,18 +99,19 @@ export default function HomeUpload() {
     {error && <UploadUnsuccessfulAlert error={error} />}
     {isSuccess && <UploadSuccessfulAlert id={data.id} />}
 
-    <button disabled={!acceptedFiles.length || _.isUndefined(storageCred) || isLoading}
-      onClick={performUpload}
-      className={classNames('text-base', 'hover:text-white', 'border-2',
-
-        'text-blue-700', 'border-blue-700', 'hover:bg-blue-800', 'enabled:focus:ring-blue-300',
-
+    <button disabled={!acceptedFiles.length || _.isUndefined(storageCred) /*|| isLoading*/}
+      onClick={isLoading ? cancelUpload : performUpload}
+      className={isLoading ? classNames('text-base', 'hover:text-white', 'border-2',
+        'text-red-700', 'border-red-700', 'hover:bg-red-800', 'enabled:focus:ring-red-300',
         'disabled:text-gray-500', 'disabled:border-gray-500', 'disabled:bg-gray-100',
-
+        'focus:ring-4', 'focus:outline-none', 'font-medium', 'text-sm', 'p-2', 'text-center', 'mt-2',
+      ) : classNames('text-base', 'hover:text-white', 'border-2',
+        'text-blue-700', 'border-blue-700', 'hover:bg-blue-800', 'enabled:focus:ring-blue-300',
+        'disabled:text-gray-500', 'disabled:border-gray-500', 'disabled:bg-gray-100',
         'focus:ring-4', 'focus:outline-none', 'font-medium', 'text-sm', 'p-2', 'text-center', 'mt-2',
         // 'mr-2', 'mb-2',
         // 'dark:border-blue-500', 'dark:hover:text-white', 'dark:hover:bg-blue-600', 'dark:focus:ring-blue-800'
 
-      )}>Upload</button>
+      )}>{isLoading ? "Cancel" : "Upload"}</button>
   </>
 }

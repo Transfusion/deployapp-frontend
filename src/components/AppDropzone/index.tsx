@@ -55,7 +55,7 @@ export default function AppDropzone({
     // <div >
     <DropzoneContainer {...getRootProps({ isFocused, isDragAccept, isDragReject })}>
       <input {...getInputProps()} />
-      <p>Drag and drop an .ipa, .apk, .aab, or a .zip file of a macOS .app</p>
+      <p>Drag and drop an .ipa or .apk{/*, .aab, or a .zip file of a macOS .app*/}</p>
 
       {acceptedFiles.map(f => {
         const { name, size, type } = f;

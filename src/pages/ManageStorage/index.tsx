@@ -20,6 +20,7 @@ import CredentialsTable from "../../components/CredentialsTable";
 import FtpCredentialFields from "./components/FtpCredentialFields";
 import { CreateFtpCredentialRequest } from "../../api/interfaces/request/create_ftp_credential";
 import { CreateFtpCredentialResponse } from "../../api/interfaces/response/create_ftp_credential";
+import Footer from "../../components/Footer";
 
 const STORAGE_TYPE_DATA = Object.entries(STORAGE_TYPES).map(
   ([label, value]: [string, string]) => ({ label, value })
@@ -137,5 +138,7 @@ export default function ManageStorage() {
 
     </form>}
     <CredentialsTable enableEditing />
+
+    <Footer />
   </div>
 }

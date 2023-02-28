@@ -19,9 +19,13 @@ import { LoginResult } from "../../api/interfaces/response/login";
 import LoginUnsuccessfulAlert from "./components/LoginUnsuccessfulAlert";
 import { ResetPasswordRequest } from "../../api/interfaces/request/reset_password_request";
 
+
+import { FcGoogle } from "react-icons/fc";
+import { BsGithub } from "react-icons/bs"
+
 const SocialLoginA = styled.a.attrs({
   // type: 'button',
-  className: 'transition duration-200 border border-gray-200 text-gray-500 w-full py-2.5  text-sm shadow-sm hover:shadow-md font-normal text-center inline-block'
+  className: 'transition duration-200 border border-gray-200 text-gray-500 w-full py-2.5  text-sm shadow-sm hover:shadow-md font-normal text-center inline-block flex justify-center align-center gap-2'
 })``;
 
 enum FORM_STATE {
@@ -92,8 +96,12 @@ function LoginForm() {
     <div className="p-5">
       <div className="grid grid-cols-3 gap-1">
         {/* <SocialLoginA>MailUp</SocialLoginA> */}
-        <SocialLoginA href={[process.env.REACT_APP_GOOGLE_AUTH_URL, process.env.REACT_APP_OAUTH_REDIRECT_BASE_URL].join("")}>Google</SocialLoginA>
-        <SocialLoginA href={[process.env.REACT_APP_GITHUB_AUTH_URL, process.env.REACT_APP_OAUTH_REDIRECT_BASE_URL].join("")}>GitHub</SocialLoginA>
+        <SocialLoginA href={[process.env.REACT_APP_GOOGLE_AUTH_URL, process.env.REACT_APP_OAUTH_REDIRECT_BASE_URL].join("")}>
+          <FcGoogle size={20} />Google
+        </SocialLoginA>
+        <SocialLoginA href={[process.env.REACT_APP_GITHUB_AUTH_URL, process.env.REACT_APP_OAUTH_REDIRECT_BASE_URL].join("")}>
+          <BsGithub size={20} />GitHub
+        </SocialLoginA>
       </div>
     </div>
 

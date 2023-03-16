@@ -1,10 +1,11 @@
 import classNames from 'classnames';
 import { useState } from 'react';
+import { MdExpandMore } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
-import { MdExpandMore } from 'react-icons/md';
 import { useAuth } from '../../contexts/AuthProvider';
 
+import AnonymousLoginReminder from '../AnonymousLoginReminder';
 import styles from './Navbar.module.css';
 
 const MobileSpan = styled.span.attrs({
@@ -121,8 +122,10 @@ export default function Navbar() {
   ] as NavItem[]
 
   return <Nav>
+    {!profile?.authenticated && profile?.has_anonymous_data && <AnonymousLoginReminder />}
+
     {/* desktop viewport */}
-    <div className="fixed w-full flex justify-end p-2.5 space-x-3 hidden sm:flex">
+    <div className=" w-full flex justify-end p-2.5 space-x-3 hidden sm:flex">
       {/* test internal link */}
 
       {navItems.map(({ name, url, external, authenticated, notAuthenticated, callback }) => {
@@ -164,7 +167,7 @@ export default function Navbar() {
 
 
     {/* abbreviated mobile navbar */}
-    <div className={classNames('fixed', 'w-full', 'flex', 'justify-end', 'p-2.5', 'space-x-3', {
+    <div className={classNames('w-full', 'flex', 'justify-end', 'p-2.5', 'space-x-3', {
       'sm:hidden': !mobileExpanded
     })}>
 

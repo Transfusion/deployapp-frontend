@@ -97,7 +97,7 @@ export default function EditBinaryPage() {
 
   if (data === undefined) {
     if (isLoading || isFetching) return <div className="mx-auto md:px-10 px-5">
-      <h1 className={classNames("py-10", "subpixel-antialiased", "font-semibold", "text-5xl", "loading")}  >Editing</h1>
+      <h1 className={classNames("pt-20", "pb-10", "subpixel-antialiased", "font-semibold", "text-5xl", "loading")}  >Editing</h1>
     </div>
 
     return <div className="min-h-full flex justify-center items-center">

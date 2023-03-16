@@ -19,6 +19,8 @@ interface Profile {
 
   oauth_login: boolean;
   oauth_registration_id?: string;
+
+  has_anonymous_data: boolean;
 }
 
 export default Profile

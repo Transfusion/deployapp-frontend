@@ -48,7 +48,7 @@ export default function Profile() {
   }
 
   return <div className="mx-auto md:px-10 px-5">
-    <h1 className="py-10 subpixel-antialiased font-semibold text-5xl">Profile</h1>
+    <h1 className="pt-20 pb-10 subpixel-antialiased font-semibold text-5xl">Profile</h1>
 
     {/* <Input placeholder="sample@email.com" /> */}
     <div className="md:w-3/4 max-w-2xl pb-5">

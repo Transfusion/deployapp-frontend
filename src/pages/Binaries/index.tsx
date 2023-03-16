@@ -120,7 +120,7 @@ export default function Binaries() {
 
 
   return <div className="mx-auto md:px-10 px-5">
-    <h1 className="py-10 subpixel-antialiased font-semibold text-5xl">App Binaries</h1>
+    <h1 className="pt-20 pb-10 subpixel-antialiased font-semibold text-5xl">App Binaries</h1>
 
     <h3 className="font-semibold text-4xl pb-2">Processing</h3>
     <Processing />

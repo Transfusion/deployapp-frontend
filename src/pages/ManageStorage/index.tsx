@@ -72,7 +72,7 @@ export default function ManageStorage() {
   const mutationError = addS3Error || addFtpError;
 
   return <div className="mx-auto md:px-10 px-5">
-    <h1 className="py-10 subpixel-antialiased font-semibold text-5xl">Storage</h1>
+    <h1 className="pt-20 pb-10 subpixel-antialiased font-semibold text-5xl">Storage</h1>
 
     <div className={classNames('pb-5', 'flex', 'flex-row', 'justify-end')}>
       <button onClick={() => setShowAddCredentials(!showAddCredentials)} type="button" className={classNames('text-base', 'text-blue-700', 'hover:text-white', 'border-2', 'border-blue-700', 'hover:bg-blue-800', 'focus:ring-4', 'focus:outline-none', 'focus:ring-blue-300', 'font-medium', 'text-sm', 'p-2', 'text-center', 'mt-2',

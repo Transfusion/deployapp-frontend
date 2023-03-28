@@ -41,6 +41,7 @@ export default function ManageStorage() {
     // req is the return type of the previous function 
     onSuccess: async () => {
       queryClient.invalidateQueries(['storage_creds']);
+      queryClient.invalidateQueries(['profile']);
     }
   });
 
@@ -51,6 +52,7 @@ export default function ManageStorage() {
     // req is the return type of the previous function 
     onSuccess: async () => {
       queryClient.invalidateQueries(['storage_creds']);
+      queryClient.invalidateQueries(['profile']);
     }
   });
 

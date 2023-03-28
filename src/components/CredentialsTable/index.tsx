@@ -252,6 +252,7 @@ export default function CredentialsTable({
       onDeleteSuccess={async (resp) => {
         tableInstanceRef.current?.toggleAllRowsExpanded(false);
         queryClient.resetQueries(['storage_creds']);
+        queryClient.invalidateQueries(['profile']);
       }}
     />
 
@@ -272,6 +273,7 @@ export default function CredentialsTable({
       onDeleteSuccess={async (resp) => {
         tableInstanceRef.current?.toggleAllRowsExpanded(false);
         queryClient.resetQueries(['storage_creds']);
+        queryClient.invalidateQueries(['profile']);
       }}
     />
 
